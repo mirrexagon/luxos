@@ -12,6 +12,7 @@ pub fn main() void {
 
     lua.luaL_openlibs(L);
 
-    _ = lua.luaL_loadstring(L, "print(_VERSION)");
-    _ = lua.lua_pcallk(L, 0, lua.LUA_MULTRET, 0, 0, null);
+    if (lua.LUA_OK == lua.luaL_loadstring(L, "print(_VERSION)")) {
+        _ = lua.lua_pcallk(L, 0, lua.LUA_MULTRET, 0, 0, null);
+    }
 }
