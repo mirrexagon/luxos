@@ -1,11 +1,25 @@
-const Builder = @import("std").build.Builder;
-
-const lua_src_dir = "deps/lua-5.3.5/src/";
+const std = @import("std");
+const Builder = std.build.Builder;
+const LibExeObjStep = std.build.LibExeObjStep;
 
 pub fn build(b: *Builder) void {
     const mode = b.standardReleaseOptions();
     const exe = b.addExecutable("luxos", "src/main.zig");
     exe.setBuildMode(mode);
+
+    add_lua(exe);
+
+    exe.linkSystemLibrary("c");
+    exe.install();
+
+    const run_step_top_level = b.step("run", "Run");
+    const run_step = exe.run();
+    run_step.step.dependOn(b.getInstallStep());
+    run_step_top_level.dependOn(&run_step.step);
+}
+
+fn add_lua(exe: *LibExeObjStep) void {
+    const lua_src_dir = "deps/lua-5.3.5/src/";
 
     const lua_c_files = [_][]const u8 {
         "lapi.c",
@@ -54,13 +68,5 @@ pub fn build(b: *Builder) void {
         exe.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);
     }
 
-    exe.linkSystemLibrary("c");
     exe.addIncludeDir(lua_src_dir);
-    exe.install();
-
-    const run_step_top_level = b.step("run", "Run");
-    const run_step = exe.run();
-    run_step.step.dependOn(b.getInstallStep());
-    run_step_top_level.dependOn(&run_step.step);
 }
-
