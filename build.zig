@@ -5,6 +5,7 @@ const LibExeObjStep = @import("std").build.LibExeObjStep;
 const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
+    // Main executable.
     const exe = b.addExecutable("bootx64", "src/main.zig");
     exe.setBuildMode(b.standardReleaseOptions());
     exe.setTarget(CrossTarget{
@@ -16,6 +17,9 @@ pub fn build(b: *Builder) void {
     exe.install();
 
     // add_lua(exe);
+
+    // Run in QEMU.
+    const run_step = b.step("run", "Run the kernel in QEMU");
 }
 
 fn add_lua(exe: *LibExeObjStep) void {

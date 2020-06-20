@@ -42,4 +42,3 @@ pub fn main() void {
     // If main()'s type is void, EfiMain will return usize(0). On return,
     // control is transferred back to the calling EFI image.
 }
-
