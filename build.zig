@@ -1,8 +1,11 @@
-const Builder = @import("std").build.Builder;
-const Target = @import("std").Target;
-const CrossTarget = @import("std").zig.CrossTarget;
-const LibExeObjStep = @import("std").build.LibExeObjStep;
+const std = @import("std");
+const os = std.os;
+const Builder = std.build.Builder;
+const Target = std.Target;
+const CrossTarget = std.zig.CrossTarget;
+const LibExeObjStep = std.build.LibExeObjStep;
 const builtin = @import("builtin");
+
 
 pub fn build(b: *Builder) void {
     // Main executable.
@@ -19,7 +22,17 @@ pub fn build(b: *Builder) void {
     // add_lua(exe);
 
     // Run in QEMU.
+    // qemu-system-x86_64 -bios path/to/OVMF.fd -hdd fat:rw:. -serial stdio
     const run_step = b.step("run", "Run the kernel in QEMU");
+    const run_cmd = b.addSystemCommand(&[_][]const u8 {
+        "qemu-system-x86_64",
+        "-bios", os.getenv("OVMF_PATH").?, // Set by `shell.nix`.
+        "-drive", "format=raw,file=fat:rw:.",
+        "-serial", "stdio",
+        "-net", "none"
+    });
+    run_cmd.step.dependOn(b.getInstallStep());
+    run_step.dependOn(&run_cmd.step);
 }
 
 fn add_lua(exe: *LibExeObjStep) void {

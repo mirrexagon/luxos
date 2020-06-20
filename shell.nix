@@ -6,5 +6,5 @@ pkgs.mkShell {
     qemu
   ];
 
-  OVMF_DIR = "${pkgs.OVMF}";
+  OVMF_PATH = "${pkgs.OVMF.fd}/FV/OVMF.fd";
 }

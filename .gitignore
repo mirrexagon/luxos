@@ -1,1 +1,4 @@
 zig-cache/
+
+# EFI variables from QEMU
+NvVars
