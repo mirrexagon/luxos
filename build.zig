@@ -1,14 +1,13 @@
 const Builder = @import("std").build.Builder;
 
+const lua_src_dir = "deps/lua-5.3.5/src/";
+
 pub fn build(b: *Builder) void {
     const mode = b.standardReleaseOptions();
     const exe = b.addExecutable("luxos", "src/main.zig");
     exe.setBuildMode(mode);
 
-    exe.linkSystemLibrary("c");
-    b.addCIncludePath("deps/lua-5.3.5/src");
-
-    const lua_c_files = [][]const u8 {
+    const lua_c_files = [_][]const u8 {
         "lapi.c",
         "lauxlib.c",
         "lbaselib.c",
@@ -44,14 +43,24 @@ pub fn build(b: *Builder) void {
         "lzio.c",
     };
 
+    const lua_cflags = [_][]const u8 {
+        "-std=c11",
+        "-pedantic",
+        "-Wall",
+        "-Wextra"
+    };
+
     inline for (lua_c_files) |c_file| {
-        const c_obj = b.addCObject(c_file, "lua-5.3.5/src/" ++ c_file);
-        exe.addObject(c_obj);
+        exe.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);
     }
 
-    exe.setOutputPath("./luxos");
+    exe.linkSystemLibrary("c");
+    exe.addIncludeDir(lua_src_dir);
+    exe.install();
 
-    b.default_step.dependOn(&exe.step);
-    b.installArtifact(exe);
+    const run_step_top_level = b.step("run", "Run");
+    const run_step = exe.run();
+    run_step.step.dependOn(b.getInstallStep());
+    run_step_top_level.dependOn(&run_step.step);
 }
 
