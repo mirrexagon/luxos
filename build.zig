@@ -1,21 +1,21 @@
-const std = @import("std");
-const Builder = std.build.Builder;
-const LibExeObjStep = std.build.LibExeObjStep;
+const Builder = @import("std").build.Builder;
+const Target = @import("std").Target;
+const CrossTarget = @import("std").zig.CrossTarget;
+const LibExeObjStep = @import("std").build.LibExeObjStep;
+const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
-    const mode = b.standardReleaseOptions();
-    const exe = b.addExecutable("luxos", "src/main.zig");
-    exe.setBuildMode(mode);
-
-    add_lua(exe);
-
-    exe.linkSystemLibrary("c");
+    const exe = b.addExecutable("bootx64", "src/main.zig");
+    exe.setBuildMode(b.standardReleaseOptions());
+    exe.setTarget(CrossTarget{
+        .cpu_arch = Target.Cpu.Arch.x86_64,
+        .os_tag = Target.Os.Tag.uefi,
+        .abi = Target.Abi.msvc,
+    });
+    exe.setOutputDir("efi/boot");
     exe.install();
 
-    const run_step_top_level = b.step("run", "Run");
-    const run_step = exe.run();
-    run_step.step.dependOn(b.getInstallStep());
-    run_step_top_level.dependOn(&run_step.step);
+    // add_lua(exe);
 }
 
 fn add_lua(exe: *LibExeObjStep) void {
