@@ -27,6 +27,7 @@ pub fn build(b: *Builder) void {
         "qemu-system-x86_64",
         "-bios", os.getenv("OVMF_PATH").?, // Set by `shell.nix`.
         "-drive", "format=raw,file=fat:rw:.",
+        "-accel", "kvm",
         "-serial", "stdio",
         "-net", "none"
     });
