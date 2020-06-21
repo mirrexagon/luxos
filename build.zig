@@ -6,7 +6,6 @@ const CrossTarget = std.zig.CrossTarget;
 const LibExeObjStep = std.build.LibExeObjStep;
 const builtin = @import("builtin");
 
-
 pub fn build(b: *Builder) void {
     // Main executable.
     const kernel = b.addExecutable("bootx64", "src/main.zig");
