@@ -9,17 +9,17 @@ const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
     // Main executable.
-    const exe = b.addExecutable("bootx64", "src/main.zig");
-    exe.setBuildMode(b.standardReleaseOptions());
-    exe.setTarget(CrossTarget{
+    const kernel = b.addExecutable("bootx64", "src/main.zig");
+    kernel.setBuildMode(b.standardReleaseOptions());
+    kernel.setTarget(CrossTarget{
         .cpu_arch = Target.Cpu.Arch.x86_64,
         .os_tag = Target.Os.Tag.uefi,
         .abi = Target.Abi.msvc,
     });
-    exe.setOutputDir("efi/boot");
-    exe.install();
+    kernel.setOutputDir("efi/boot");
+    kernel.install();
 
-    // add_lua(exe);
+    // add_lua(kernel);
 
     // Run in QEMU.
     // qemu-system-x86_64 -bios path/to/OVMF.fd -hdd fat:rw:. -serial stdio
@@ -35,10 +35,10 @@ pub fn build(b: *Builder) void {
     run_step.dependOn(&run_cmd.step);
 }
 
-fn add_lua(exe: *LibExeObjStep) void {
+fn add_lua(item: *LibExeObjStep) void {
     const lua_src_dir = "deps/lua-5.3.5/src/";
 
-    const lua_c_files = [_][]const u8 {
+    const lua_c_files = .{
         "lapi.c",
         "lauxlib.c",
         "lbaselib.c",
@@ -74,7 +74,7 @@ fn add_lua(exe: *LibExeObjStep) void {
         "lzio.c",
     };
 
-    const lua_cflags = [_][]const u8 {
+    const lua_cflags = .{
         "-std=c11",
         "-pedantic",
         "-Wall",
@@ -82,8 +82,8 @@ fn add_lua(exe: *LibExeObjStep) void {
     };
 
     inline for (lua_c_files) |c_file| {
-        exe.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);
+        item.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);
     }
 
-    exe.addIncludeDir(lua_src_dir);
+    item.addIncludeDir(lua_src_dir);
 }
