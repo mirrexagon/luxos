@@ -36,42 +36,41 @@ pub fn build(b: *Builder) void {
 }
 
 fn add_lua(item: *LibExeObjStep) void {
-    const lua_src_dir = "deps/lua-5.3.5/src/";
+    const lua_src_dir = "deps/lua-5.4.0/src/";
 
     const lua_c_files = .{
         "lapi.c",
-        "lauxlib.c",
-        "lbaselib.c",
-        "lbitlib.c",
         "lcode.c",
-        "lcorolib.c",
         "lctype.c",
-        "ldblib.c",
         "ldebug.c",
         "ldo.c",
         "ldump.c",
         "lfunc.c",
         "lgc.c",
-        "linit.c",
-        "liolib.c",
         "llex.c",
-        "lmathlib.c",
         "lmem.c",
-        "loadlib.c",
         "lobject.c",
         "lopcodes.c",
-        "loslib.c",
         "lparser.c",
         "lstate.c",
         "lstring.c",
-        "lstrlib.c",
         "ltable.c",
-        "ltablib.c",
         "ltm.c",
         "lundump.c",
-        "lutf8lib.c",
         "lvm.c",
         "lzio.c",
+        "lauxlib.c",
+        "lbaselib.c",
+        "lcorolib.c",
+        "ldblib.c",
+        "liolib.c",
+        "lmathlib.c",
+        "loadlib.c",
+        "loslib.c",
+        "lstrlib.c",
+        "ltablib.c",
+        "lutf8lib.c",
+        "linit.c",
     };
 
     const lua_cflags = .{
