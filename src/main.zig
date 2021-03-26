@@ -12,7 +12,7 @@ fn puts(msg: []const u8) void {
     }
 }
 
-fn printf(buf: []u8, comptime format: []const u8, args: var) void {
+fn printf(buf: []u8, comptime format: []const u8, args: anytype) void {
     puts(fmt.bufPrint(buf, format, args) catch unreachable);
 }
 
