@@ -1,13 +1,8 @@
 { pkgs ? import <nixpkgs> {} }:
 
-let
-  # NOTE: Currently on my `uefi-bugs` branch.
-  zigCustom = pkgs.zig.overrideAttrs (oldAttrs: rec {
-      src = ../zig;
-    });
-in pkgs.mkShell {
+pkgs.mkShell {
   buildInputs = with pkgs; [
-    zigCustom
+    zig
     qemu
     binutils
   ];
