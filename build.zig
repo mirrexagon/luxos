@@ -16,8 +16,13 @@ pub fn build(b: *Builder) void {
         .os_tag = Target.Os.Tag.freestanding,
         .abi = Target.Abi.none,
     });
-    // kernel.setLinkerScriptPath("linker.ld");
+    kernel.setLinkerScriptPath("linker.ld");
+
+    // https://github.com/ziglang/zig/issues/5558
+    kernel.code_model = .medium;
+
     // add_lua(kernel);
+
     kernel.install();
 
     // Run in QEMU.
