@@ -6,6 +6,4 @@ pkgs.mkShell {
     qemu
     binutils
   ];
-
-  OVMF_PATH = "${pkgs.OVMF.fd}/FV/OVMF.fd";
 }

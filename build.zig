@@ -8,28 +8,27 @@ const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
     // Main executable.
-    const kernel = b.addExecutable("bootx64", "src/main.zig");
+    const kernel = b.addExecutable("kernel", "src/main.zig");
     kernel.setBuildMode(b.standardReleaseOptions());
     kernel.setTarget(CrossTarget{
-        .cpu_arch = Target.Cpu.Arch.x86_64,
-        .os_tag = Target.Os.Tag.uefi,
-        .abi = Target.Abi.msvc,
+        .cpu_arch = Target.Cpu.Arch.riscv64,
+        .os_tag = Target.Os.Tag.freestanding,
     });
-    kernel.setOutputDir("efi/boot");
     kernel.install();
 
     // add_lua(kernel);
 
     // Run in QEMU.
-    // qemu-system-x86_64 -bios path/to/OVMF.fd -hdd fat:rw:. -serial stdio
     const run_step = b.step("run", "Run the kernel in QEMU");
     const run_cmd = b.addSystemCommand(&[_][]const u8 {
-        "qemu-system-x86_64",
-        "-bios", os.getenv("OVMF_PATH").?, // Set by `shell.nix`.
-        "-drive", "format=raw,file=fat:rw:.",
-        "-accel", "kvm",
-        "-serial", "stdio",
-        "-net", "none"
+        "qemu-system-riscv64",
+        "-nographic",
+        "-cpu", "rv64",
+        "-machine", "virt",
+        "-smp", "2",
+        "-m", "128M",
+        "-serial", "mon:stdio",
+        "-bios", "default"
     });
     run_cmd.step.dependOn(b.getInstallStep());
     run_step.dependOn(&run_cmd.step);
