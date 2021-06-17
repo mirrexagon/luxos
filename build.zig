@@ -10,13 +10,15 @@ pub fn build(b: *Builder) void {
     // Main executable.
     const kernel = b.addExecutable("kernel", "src/main.zig");
     kernel.setBuildMode(b.standardReleaseOptions());
-    kernel.setTarget(CrossTarget{
+    kernel.setTarget(CrossTarget {
         .cpu_arch = Target.Cpu.Arch.riscv64,
+        .cpu_model = .{ .explicit = &Target.riscv.cpu.generic_rv64 },
         .os_tag = Target.Os.Tag.freestanding,
+        .abi = Target.Abi.none,
     });
-    kernel.install();
-
+    // kernel.setLinkerScriptPath("linker.ld");
     // add_lua(kernel);
+    kernel.install();
 
     // Run in QEMU.
     const run_step = b.step("run", "Run the kernel in QEMU");
@@ -28,7 +30,8 @@ pub fn build(b: *Builder) void {
         "-smp", "2",
         "-m", "128M",
         "-serial", "mon:stdio",
-        "-bios", "default"
+        "-bios", "default",
+        "-kernel", "zig-out/bin/kernel",
     });
     run_cmd.step.dependOn(b.getInstallStep());
     run_step.dependOn(&run_cmd.step);
