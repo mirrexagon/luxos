@@ -36,7 +36,7 @@ pub fn build(b: *Builder) void {
         "-m", "128M",
         "-serial", "mon:stdio",
         "-bios", "default",
-        "-kernel", "zig-out/bin/kernel",
+        // "-kernel", "zig-out/bin/kernel",
     });
     run_cmd.step.dependOn(b.getInstallStep());
     run_step.dependOn(&run_cmd.step);
