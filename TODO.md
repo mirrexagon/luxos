@@ -1,0 +1,2 @@
+- https://interrupt.memfault.com/blog/how-to-write-linker-scripts-for-firmwareA
+- https://elinux.org/Device_Tree_Usage
