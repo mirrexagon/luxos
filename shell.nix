@@ -4,6 +4,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     zig
     qemu
-    binutils
+
+    pkgs.pkgsCross.riscv64.buildPackages.binutils
   ];
 }
