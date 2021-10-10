@@ -2,6 +2,10 @@
 References:
 - https://github.com/sifive/freedom-e-sdk/blob/f6d42e1c21a2dde5cd942be0e7f68f8dfff941d1/bsp/sifive-hifive1-revb/metal.default.lds
 - https://github.com/sgmarz/osblog/blob/f9572be05addbea25ae5c35aca3d6846e60417de/risc_v/src/lds/virt.lds
+- https://wiki.osdev.org/HiFive-1_Bare_Bones
+- https://interrupt.memfault.com/blog/how-to-write-linker-scripts-for-firmware
+- About the bootloader: https://forums.sifive.com/t/bootloader-restore/2429
+- https://sourceware.org/binutils/docs/ld/Scripts.html
 */
 
 OUTPUT_ARCH( "riscv" )
