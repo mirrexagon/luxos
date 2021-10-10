@@ -116,10 +116,8 @@ SECTIONS {
     but the VMA is in RAM.
     */
 
-    __bss_source_start = LOADADDR(.bss);
-    __bss_source_end = LOADADDR(.bss) + SIZEOF(.bss);
-    __bss_target_start = ADDR(.bss);
-    __bss_target_end = ADDR(.bss) + SIZEOF(.bss);
+    __bss_start = ADDR(.bss);
+    __bss_end = ADDR(.bss) + SIZEOF(.bss);
 
     .bss : {
         *(.sbss .sbss.* .bss .bss.*)
