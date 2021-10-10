@@ -8,7 +8,7 @@ const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
     // Main executable.
-    const kernel = b.addExecutable("kernel", "src/main.zig");
+    const kernel = b.addExecutable("kernel.elf", "src/main.zig");
     kernel.setBuildMode(b.standardReleaseOptions());
     kernel.setTarget(CrossTarget{
         .cpu_arch = Target.Cpu.Arch.riscv32,
@@ -32,7 +32,15 @@ pub fn build(b: *Builder) void {
         "-nographic",
         "-machine",
         "sifive_e,revb=true",
-        // "-kernel", "zig-out/bin/kernel",
+
+        // -kernel appears to load the binary into data RAM.
+        // https://github.com/qemu/qemu/blob/b8fb878aa2485fd41502295f0ff5362a67c8ba68/hw/riscv/sifive_e.c#L110
+        //
+        // So instead we use the -loader to place the kernel in flash at the location the bootloader jumps to.
+        // https://github.com/tock/tock/blob/7fcb3751f02dedc41ca8bbab42819b88cb4bdda8/boards/hifive1/README.md
+        // https://qemu.readthedocs.io/en/latest/system/generic-loader.html#loading-files
+        "-device",
+        "loader,file=zig-out/bin/kernel.elf",
     });
     run_cmd.step.dependOn(b.getInstallStep());
     run_step.dependOn(&run_cmd.step);

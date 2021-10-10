@@ -4,7 +4,7 @@ References:
 - https://github.com/sgmarz/osblog/blob/f9572be05addbea25ae5c35aca3d6846e60417de/risc_v/src/lds/virt.lds
 - https://wiki.osdev.org/HiFive-1_Bare_Bones
 - https://interrupt.memfault.com/blog/how-to-write-linker-scripts-for-firmware
-- About the bootloader: https://forums.sifive.com/t/bootloader-restore/2429
+- About the bootloader: https://forums.sifive.com/t/bootloader-restore/2429 https://forums.sifive.com/t/default-bootloader-kernel/2630/3
 - https://sourceware.org/binutils/docs/ld/Scripts.html
 */
 
@@ -22,15 +22,26 @@ i = initialized
 
 Mappings from FE310-G002 manual, chapter 4 (Memory Map)
 */
-MEMORY
-{
-    ram (wxa!ri) : ORIGIN = 0x80000000, LENGTH = 16K
+MEMORY {
+    ram (wa!rxi) : ORIGIN = 0x80000000, LENGTH = 16K
 
     /*
     The memory-mapped flash region is 512 MiB large and starts at 0x20000000,
     but the HiFive1 Rev B comes with a bootloader there that runs and
-    eventually jumps to 0x20010000. To avoid overwriting the bootloader,
-    instead of doing:
+    then jumps to 0x20010000.
+
+    From the HiFive1 Rev B Getting started Guide v1.2:
+
+        The HiFive1 Rev B Board is shipped with a modifiable boot loader at the begnning of SPI Flash
+        (0x20000000). At the end of this program’s execution the core jumps to the main user portion of
+        code at 0x20010000. This program is designed to allow quick boot, but also a “safe” reboot
+        option if a “bad” program is flashed into the HiFive1’s SPI Flash. A “bad” program is one which
+        makes it impossible for the programmer to communicate with the HiFive1 Rev B. For example, a
+        program which disables FE310’s active clock, or which puts the FE310 to sleep with no way of
+        waking it up. Bad programs can always be restarted using the RESET button, and using the
+        “safe” bootloader can be halted before they perform any unsafe behavior.
+
+    To avoid overwriting the bootloader, instead of doing:
 
     flash (rxai!w) : ORIGIN = 0x20000000, LENGTH = 512M
 
@@ -42,20 +53,85 @@ MEMORY
     flash (rxai!w) : ORIGIN = 0x20010000, LENGTH = (4M - 0x10000)
 }
 
-PHDRS
-{
-}
+SECTIONS {
+     __stack_size = 1K;
+    PROVIDE(__stack_size = __stack_size);
 
-SECTIONS
-{
+    __heap_size = 0x800;
+
+    /*
+    At the end of each section:
+
+    > = VMA (virtual memory address)
+    AT> = LMA (load memory address)
+
+    Each section in an object file has a name and a size. Most sections also have an
+    associated block of data, known as the section contents. A section may be marked
+    as loadable, which means that the contents should be loaded into memory when the
+    output file is run. A section with no contents may be allocatable, which means
+    that an area in memory should be set aside, but nothing in particular should be
+    loaded there (in some cases this memory must be zeroed out). A section which
+    is neither loadable nor allocatable typically contains some sort of debugging
+    information.
+
+    Every loadable or allocatable output section has two addresses. The first
+    is the VMA, or virtual memory address. This is the address the section will
+    have when the output file is run. The second is the LMA, or load memory
+    address. This is the address at which the section will be loaded. In most
+    cases the two addresses will be the same. An example of when they might be
+    different is when a data section is loaded into ROM, and then copied into
+    RAM when the program starts up (this technique is often used to initialize
+    global variables in a ROM based system). In this case the ROM address would
+    be the LMA, and the RAM address would be the VMA.
+
+    https://sourceware.org/binutils/docs/ld/Basic-Script-Concepts.html
+    https://sourceware.org/binutils/docs/ld/Output-Section-LMA.html
+    */
+
     .text :
     {
         /*
-        The entry point must be at the start of flash (well, technically at
-        0x10000 into flash, where the bootloader jumps to. We set that up in the
-        MEMORY section.
+        The entry point must be where the bootloader jumps to. We set the start
+        of our flash region to that point in the MEMORY section.
         */
         *(.text.start)
         *(.text .text.*)
-    } >flash AT>flash :flash
+    } >flash AT>flash
+    /*
+    Code (.text) doesn't need to be writable and is just read/executed from flash.
+    */
+
+    .rodata : {
+        *(.rodata .rodata.*)
+    } >flash AT>flash
+    /*
+    Read-only data (.rodata) doesn't need to be writable and is also just read from flash.
+    */
+
+    PROVIDE( __data_source_start = LOADADDR(.data) );
+    PROVIDE( __data_source_end = LOADADDR(.data) + SIZEOF(.data) );
+    PROVIDE( __data_target_start = ADDR(.data) );
+    PROVIDE( __data_target_end = ADDR(.data) + SIZEOF(.data) );
+
+    .data : {
+        *(.sdata .sdata.* .data .data.*)
+    } >ram AT>flash
+    /*
+    Modifiable data (.data) does need to be writable and so needs be in RAM, but
+    has initial values in flash that need to be loaded. Thus the LMA is in flash
+    but the VMA is in RAM.
+    */
+
+    PROVIDE( __bss_source_start = LOADADDR(.bss) );
+    PROVIDE( __bss_source_end = LOADADDR(.bss) + SIZEOF(.bss) );
+    PROVIDE( __bss_target_start = ADDR(.bss) );
+    PROVIDE( __bss_target_end = ADDR(.bss) + SIZEOF(.bss) );
+
+    .bss : {
+        *(.sbss .sbss.* .bss .bss.*)
+    } >ram AT>ram
+    /*
+    Zero-initialised data (.bss) does need to be writable but doesn't need
+    anything loaded from flash. So it is entirely in RAM.
+    */
 }
