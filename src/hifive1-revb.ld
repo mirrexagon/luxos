@@ -8,9 +8,9 @@ References:
 - https://sourceware.org/binutils/docs/ld/Scripts.html
 */
 
-OUTPUT_ARCH( "riscv" )
+OUTPUT_ARCH("riscv")
 
-ENTRY( _start )
+ENTRY(_start)
 
 /*
 w = writable
@@ -23,7 +23,7 @@ i = initialized
 Mappings from FE310-G002 manual, chapter 4 (Memory Map)
 */
 MEMORY {
-    ram (wa!rxi) : ORIGIN = 0x80000000, LENGTH = 16K
+    ram (wa!rx) : ORIGIN = 0x80000000, LENGTH = 16K
 
     /*
     The memory-mapped flash region is 512 MiB large and starts at 0x20000000,
@@ -43,27 +43,21 @@ MEMORY {
 
     To avoid overwriting the bootloader, instead of doing:
 
-    flash (rxai!w) : ORIGIN = 0x20000000, LENGTH = 512M
+    flash (rxa!w) : ORIGIN = 0x20000000, LENGTH = 512M
 
     we instead start at 0x20010000.
 
     Note that the actual flash chip is 4 MB (32 Mbit) large, so we also take
     that into account here.
     */
-    flash (rxai!w) : ORIGIN = 0x20010000, LENGTH = (4M - 0x10000)
+    flash (rxa!w) : ORIGIN = 0x20010000, LENGTH = (4M - 0x10000)
 }
 
 SECTIONS {
-     __stack_size = 1K;
-    PROVIDE(__stack_size = __stack_size);
-
-    __heap_size = 0x800;
-
     /*
-    At the end of each section:
-
-    > = VMA (virtual memory address)
-    AT> = LMA (load memory address)
+    At the end of each output section:
+        > = VMA (virtual memory address)
+        AT> = LMA (load memory address)
 
     Each section in an object file has a name and a size. Most sections also have an
     associated block of data, known as the section contents. A section may be marked
@@ -108,10 +102,10 @@ SECTIONS {
     Read-only data (.rodata) doesn't need to be writable and is also just read from flash.
     */
 
-    PROVIDE( __data_source_start = LOADADDR(.data) );
-    PROVIDE( __data_source_end = LOADADDR(.data) + SIZEOF(.data) );
-    PROVIDE( __data_target_start = ADDR(.data) );
-    PROVIDE( __data_target_end = ADDR(.data) + SIZEOF(.data) );
+    __data_source_start = LOADADDR(.data);
+    __data_source_end = LOADADDR(.data) + SIZEOF(.data);
+    __data_target_start = ADDR(.data);
+    __data_target_end = ADDR(.data) + SIZEOF(.data);
 
     .data : {
         *(.sdata .sdata.* .data .data.*)
@@ -122,10 +116,10 @@ SECTIONS {
     but the VMA is in RAM.
     */
 
-    PROVIDE( __bss_source_start = LOADADDR(.bss) );
-    PROVIDE( __bss_source_end = LOADADDR(.bss) + SIZEOF(.bss) );
-    PROVIDE( __bss_target_start = ADDR(.bss) );
-    PROVIDE( __bss_target_end = ADDR(.bss) + SIZEOF(.bss) );
+    __bss_source_start = LOADADDR(.bss);
+    __bss_source_end = LOADADDR(.bss) + SIZEOF(.bss);
+    __bss_target_start = ADDR(.bss);
+    __bss_target_end = ADDR(.bss) + SIZEOF(.bss);
 
     .bss : {
         *(.sbss .sbss.* .bss .bss.*)
@@ -134,4 +128,16 @@ SECTIONS {
     Zero-initialised data (.bss) does need to be writable but doesn't need
     anything loaded from flash. So it is entirely in RAM.
     */
+
+    __stack_size = 1K;
+
+    .stack ORIGIN(ram) + LENGTH(ram) - __stack_size : {
+        /*
+        The stack pointer needs to be aligned to 16 bytes and can initially
+        point to a non-existent word (eg. just past the end of RAM), as per the
+        RISC-V calling convention.
+        TODO: Add reference to ELF/ABI/calling convention document.
+        */
+        __initial_stack_pointer = ADDR(.stack) + __stack_size;
+    } >ram AT>ram
 }
