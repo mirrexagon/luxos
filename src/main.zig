@@ -1,6 +1,6 @@
-export fn _start() callconv(.Naked) noreturn {
-    var i: i32 = 0;
+var i: isize = 0;
 
+export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
     while (i < 1000) {
         i += 1;
     }

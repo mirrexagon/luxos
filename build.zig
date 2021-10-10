@@ -10,13 +10,13 @@ pub fn build(b: *Builder) void {
     // Main executable.
     const kernel = b.addExecutable("kernel", "src/main.zig");
     kernel.setBuildMode(b.standardReleaseOptions());
-    kernel.setTarget(CrossTarget {
-        .cpu_arch = Target.Cpu.Arch.riscv64,
-        .cpu_model = .{ .explicit = &Target.riscv.cpu.generic_rv64 },
+    kernel.setTarget(CrossTarget{
+        .cpu_arch = Target.Cpu.Arch.riscv32,
+        .cpu_model = .{ .explicit = &Target.riscv.cpu.sifive_e31 },
         .os_tag = Target.Os.Tag.freestanding,
         .abi = Target.Abi.none,
     });
-    kernel.setLinkerScriptPath("linker.ld");
+    kernel.setLinkerScriptPath("src/hifive1-revb.ld");
 
     // https://github.com/ziglang/zig/issues/5558
     kernel.code_model = .medium;
@@ -27,15 +27,11 @@ pub fn build(b: *Builder) void {
 
     // Run in QEMU.
     const run_step = b.step("run", "Run the kernel in QEMU");
-    const run_cmd = b.addSystemCommand(&[_][]const u8 {
-        "qemu-system-riscv64",
+    const run_cmd = b.addSystemCommand(&[_][]const u8{
+        "qemu-system-riscv32",
         "-nographic",
-        "-cpu", "rv64",
-        "-machine", "virt",
-        "-smp", "2",
-        "-m", "128M",
-        "-serial", "mon:stdio",
-        "-bios", "default",
+        "-machine",
+        "sifive_e,revb=true",
         // "-kernel", "zig-out/bin/kernel",
     });
     run_cmd.step.dependOn(b.getInstallStep());
@@ -80,12 +76,7 @@ fn add_lua(item: *LibExeObjStep) void {
         "linit.c",
     };
 
-    const lua_cflags = .{
-        "-std=c11",
-        "-pedantic",
-        "-Wall",
-        "-Wextra"
-    };
+    const lua_cflags = .{ "-std=c11", "-pedantic", "-Wall", "-Wextra" };
 
     inline for (lua_c_files) |c_file| {
         item.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);

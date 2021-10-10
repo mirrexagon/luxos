@@ -15,4 +15,4 @@ See Early Boot in Linux for expected state: https://www.sifive.com/blog/all-aboa
 Support HiFive1 first maybe, can then support RV64GC QEMU
 Does HiFive1 application get device tree?
 
-https://sifive.cdn.prismic.io/sifive/e36c0a2f-413f-49d4-85c1-51ee1ed243e5_fe310-g002-manual-v1p1.pdf
+- https://github.com/qemu/qemu/blob/2c3e83f92d93fbab071b8a96b8ab769b01902475/hw/riscv/sifive_e.c
