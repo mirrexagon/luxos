@@ -7,3 +7,6 @@ Thus SaveBin saves from memory addresses, not flash addresses.
 
 Various parts of the HiFive1 dumped code disassemble to the J instruction, which was removed?
 https://riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf - search for "has been dropped"
+
+
+Need to set up PLL to increase clock speed, Freedom E SDK probably has startup code that does this, have a look
