@@ -41,7 +41,7 @@ const prci_base_address = 0x1000_8000;
 /// provide the default clock after reset, and can be used to allow operation
 /// without an external high-frequency crystal or the PLL.
 /// The oscillator is controlled by the hfrosccfg register.
-pub const hfrosccfg = SymmetricRegister(u32, packed struct {
+pub const hfrosccfg = Register(u32, packed struct {
     /// Ring Oscillator Divider Register (RW)
     hfroscdiv: u6,
     _reserved_6: u10,
@@ -57,7 +57,7 @@ pub const hfrosccfg = SymmetricRegister(u32, packed struct {
 /// An external high-frequency 16 MHz crystal oscillator (HFXOSC) can be used to
 /// provide a precise clock source.
 /// The HFXOSC is controlled via the memory-mapped hfxosccfg register.
-pub const hfxosccfg = SymmetricRegister(u32, packed struct {
+pub const hfxosccfg = Register(u32, packed struct {
     _reserved_0: u29,
     /// Crystal Oscillator Enable (RW)
     hfxoscen: bool,
@@ -71,7 +71,7 @@ pub const hfxosccfg = SymmetricRegister(u32, packed struct {
 /// clock frequencies in the range 48–384 MHz.
 /// The PLL is controlled by a memory-mapped read-write pllcfg register in the
 /// PRCI address space.
-pub const pllcfg = SymmetricRegister(u32, packed struct {
+pub const pllcfg = Register(u32, packed struct {
     /// PLL R Value (RW)
     pllr: u3,
     _reserved_3: u1,
@@ -105,7 +105,7 @@ pub const pllcfg = SymmetricRegister(u32, packed struct {
 }).new(prci_base_address + 0x8);
 
 /// The plloutdiv register controls a clock divider that divides the output of the PLL.
-pub const plloutdiv = SymmetricRegister(u32, packed struct {
+pub const plloutdiv = Register(u32, packed struct {
     /// PLL Final Divider Value (RW)
     plloutdiv: u6,
     _reserved_6: u2,

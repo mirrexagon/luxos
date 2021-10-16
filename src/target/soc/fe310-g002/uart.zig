@@ -9,19 +9,27 @@ pub const Uart1 = Uart(0x1002_3000);
 
 fn Uart(base_address: usize) type {
     return struct {
-        const Self = @This();
-
-        pub fn setBaudRate(self: Self) void {
+        pub fn setBaudRate() void {
             // For now, hardcode to 115200 assuming a 16 MHz tlclk.
             // Value is from the manual, Section 18.9 Table 62.
-            self.div.modify(.{
+            div.modify(.{
                 .div = 138,
             });
         }
 
-        pub fn enableTx(self: Self) void {
-            self.txctrl.modify(.{
+        pub fn enableTx() void {
+            txctrl.modify(.{
                 .txen = true,
+            });
+        }
+
+        pub fn writeByte(byte: u8) void {
+            // Wait for TX FIFO to have space available.
+            while (txdata.read().full) {}
+
+            // Write the byte to the TX FIFO.
+            txdata.write(.{
+                .data = byte,
             });
         }
 
@@ -33,31 +41,31 @@ fn Uart(base_address: usize) type {
         /// writes to data are ignored. A RISC‑V amoor.w instruction can be used
         /// to both read the full status and attempt to enqueue data, with a
         /// non-zero return value indicating the character was not accepted.
-        txdata: Register(u32, packed struct {
+        const txdata = Register(u32, packed struct {
             /// Transmit data (RW)
             data: u8,
-            _reserved_8: u15,
+            _reserved_8: u23 = 0,
             /// Transmit FIFO full (RO)
-            full: bool,
-        }).new(base_address + 0x0),
+            full: bool = false,
+        }).new(base_address + 0x0);
 
         /// Reading the rxdata register dequeues a character from the receive
         /// FIFO and returns the value in the data field. The empty flag
         /// indicates if the receive FIFO was empty; when set, the data field
         /// does not contain a valid character. Writes to rxdata are ignored.
-        rxdata: Register(u32, packed struct {
+        const rxdata = Register(u32, packed struct {
             /// Received data (RO)
             data: u8,
-            _reserved_8: u15,
+            _reserved_8: u23,
             /// Receive FIFO empty (RO)
             empty: bool,
-        }).new(base_address + 0x4),
+        }).new(base_address + 0x4);
 
         /// The read-write txctrl register controls the operation of the
         /// transmit channel. The txen bit controls whether the Tx channel
         /// is active. When cleared, transmission of Tx FIFO contents is
         /// suppressed, and the txd pin is driven high.
-        txctrl: Register(u32, packed struct {
+        const txctrl = Register(u32, packed struct {
             /// Transmit enable (RW)
             txen: bool,
             /// Number of stop bits (RW)
@@ -70,13 +78,13 @@ fn Uart(base_address: usize) type {
             /// The threshold at which the TX FIFO watermark interrupt triggers.
             txcnt: u3,
             _reserved_19: u13,
-        }).new(base_address + 0x08),
+        }).new(base_address + 0x08);
 
         /// The read-write rxctrl register controls the operation of the receive
         /// channel. The rxen bit controls whether the Rx channel is active.
         /// When cleared, the state of the rxd pin is ignored, and no
         /// characters will be enqueued into the Rx FIFO.
-        rxctrl: Register(u32, packed struct {
+        const rxctrl = Register(u32, packed struct {
             /// Receive enable (RW)
             rxen: bool,
             /// Number of stop bits (RW)
@@ -89,7 +97,7 @@ fn Uart(base_address: usize) type {
             /// The threshold at which the RX FIFO watermark interrupt triggers.
             rxcnt: u3,
             _reserved_19: u13,
-        }).new(base_address + 0x0C),
+        }).new(base_address + 0x0C);
 
         /// The read-write ie register controls which UART interrupts are
         /// enabled.
@@ -103,28 +111,28 @@ fn Uart(base_address: usize) type {
         /// receive FIFO is strictly greater than the count specified by the
         /// rxcnt field of the rxctrl register. The pending bit is cleared when
         /// sufficient entries have been dequeued to fall below the watermark.
-        ie: Register(u32, packed struct {
+        const ie = Register(u32, packed struct {
             /// Transmit watermark interrupt enable.
             txwm: bool,
             /// Receive watermark interrupt enable.
             rxwm: bool,
             _reserved_2: u30,
-        }).new(base_address + 0x10),
+        }).new(base_address + 0x10);
 
         /// The ip register is a read-only register indicating the pending
         /// interrupt conditions. See ie for more details.
-        ip: Register(u32, packed struct {
+        const ip = Register(u32, packed struct {
             /// Transmit watermark interrupt pending.
             txwm: bool,
             /// Receive watermark interrupt pending.
             rxwm: bool,
             _reserved_2: u30,
-        }).new(base_address + 0x14),
+        }).new(base_address + 0x14);
 
-        div: Register(u32, packed struct {
+        const div = Register(u32, packed struct {
             /// Baud rate divisor.
             div: u16,
             _reserved_16: u16,
-        }).new(base_address + 0x18),
+        }).new(base_address + 0x18);
     };
 }

@@ -9,5 +9,9 @@ pub fn kmain() noreturn {
     uart.Uart0.setBaudRate();
     uart.Uart0.enableTx();
 
+    for ("This is Luxos!\n") |c| {
+        uart.Uart0.writeByte(c);
+    }
+
     while (true) {}
 }

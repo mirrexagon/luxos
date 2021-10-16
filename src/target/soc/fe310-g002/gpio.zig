@@ -41,15 +41,16 @@ const out_xor = 0x40; // Output XOR (invert)
 const passthru_high_ie = 0x44; // Pass-through active-high interrupt enable
 const passthru_low_ie = 0x48; // Pass-through active-low interrupt enable
 
-fn setGpioRegister(gpio: u5, register_offset: usize, new_value: bool) void {
+fn setGpioRegister(gpio_number: u5, register_offset: usize, new_value: u1) void {
     const ptr = @intToPtr(*volatile u32, gpio_base_address + register_offset);
 
     var value = ptr.*;
+    const mask = @as(u32, 1) << gpio_number;
 
-    if (new_value) {
-        value |= (1 << gpio);
+    if (new_value == 1) {
+        value |= mask;
     } else {
-        value &= ~(1 << gpio);
+        value &= ~mask;
     }
 
     ptr.* = value;
