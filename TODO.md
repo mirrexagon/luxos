@@ -16,3 +16,6 @@ Support HiFive1 first maybe, can then support RV64GC QEMU
 Does HiFive1 application get device tree?
 
 - https://github.com/qemu/qemu/blob/2c3e83f92d93fbab071b8a96b8ab769b01902475/hw/riscv/sifive_e.c
+
+# MMIO in Zig
+https://scattered-thoughts.net/writing/mmio-in-zig
