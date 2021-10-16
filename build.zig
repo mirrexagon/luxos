@@ -8,7 +8,7 @@ const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
     // Main executable.
-    const kernel = b.addExecutable("kernel.elf", "src/main.zig");
+    const kernel = b.addExecutable("kernel.elf", "src/start.zig");
     kernel.setBuildMode(b.standardReleaseOptions());
     kernel.setTarget(CrossTarget{
         .cpu_arch = Target.Cpu.Arch.riscv32,
