@@ -16,7 +16,7 @@ pub fn build(b: *Builder) void {
         .os_tag = Target.Os.Tag.freestanding,
         .abi = Target.Abi.none,
     });
-    kernel.setLinkerScriptPath("src/hifive1-revb.ld");
+    kernel.setLinkerScriptPath("src/target/board/hifive1-revb/linker.ld");
 
     // https://github.com/ziglang/zig/issues/5558
     kernel.code_model = .medium;

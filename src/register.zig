@@ -1,4 +1,6 @@
-// Adapted from https://scattered-thoughts.net/writing/mmio-in-zig
+//! Memory-mapped register abstraction.
+//!
+//! Adapted from https://scattered-thoughts.net/writing/mmio-in-zig
 
 const assert = @import("std").debug.assert;
 
