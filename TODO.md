@@ -11,11 +11,5 @@ We want to do it this way and not just start the kernel in machine mode to be po
 
 See Early Boot in Linux for expected state: https://www.sifive.com/blog/all-aboard-part-6-booting-a-risc-v-linux-kernel
 
-# Platforms
-Support HiFive1 first maybe, can then support RV64GC QEMU
-Does HiFive1 application get device tree?
-
-- https://github.com/qemu/qemu/blob/2c3e83f92d93fbab071b8a96b8ab769b01902475/hw/riscv/sifive_e.c
-
-# MMIO in Zig
-https://scattered-thoughts.net/writing/mmio-in-zig
+# Nice panics in Zig bare metal
+https://andrewkelley.me/post/zig-stack-traces-kernel-panic-bare-bones-os.html
