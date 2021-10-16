@@ -2,12 +2,13 @@
 //! non-AON memory-mapped control and status registers controlling component
 //! power states, resets, clock selection, and low-level interrupts, hence the
 //! name.
-//! - FE310-G002 manual v1p1, section 6.2
+//!
+//! - FE310-G002 manual v1p1, Section 6.2
 
 // Note: The manual lists a procmoncfg register but does not describe it.
 // https://forums.sifive.com/t/fe310-g002-v1p0-manual-errata/4751
 
-const Register = @import("../../../register.zig").Register;
+const Register = @import("../../../register.zig").SymmetricRegister;
 
 pub fn useExternalCrystalOscillator() void {
     hfrosccfg.modify(.{
@@ -40,25 +41,7 @@ const prci_base_address = 0x1000_8000;
 /// provide the default clock after reset, and can be used to allow operation
 /// without an external high-frequency crystal or the PLL.
 /// The oscillator is controlled by the hfrosccfg register.
-pub const hfrosccfg = Register(u32, hfrosccfg_struct, hfrosccfg_struct).new(prci_base_address + 0x0);
-
-/// An external high-frequency 16 MHz crystal oscillator (HFXOSC) can be used to
-/// provide a precise clock source.
-/// The HFXOSC is controlled via the memory-mapped hfxosccfg register.
-pub const hfxosccfg = Register(u32, hfxosccfg_struct, hfxosccfg_struct).new(prci_base_address + 0x4);
-
-/// The PLL generates a high-frequency clock by multiplying a mid-frequency
-/// reference source clock, either the HFROSC or the HFXOSC. The input frequency
-/// to the PLL can be in the range 6–48 MHz. The PLL can generate output
-/// clock frequencies in the range 48–384 MHz.
-/// The PLL is controlled by a memory-mapped read-write pllcfg register in the
-/// PRCI address space.
-pub const pllcfg = Register(u32, pllcfg_struct, pllcfg_struct).new(prci_base_address + 0x8);
-
-/// The plloutdiv register controls a clock divider that divides the output of the PLL.
-pub const plloutdiv = Register(u32, plloutdiv_struct, plloutdiv_struct).new(prci_base_address + 0xC);
-
-const hfrosccfg_struct = packed struct {
+pub const hfrosccfg = SymmetricRegister(u32, packed struct {
     /// Ring Oscillator Divider Register (RW)
     hfroscdiv: u6,
     _reserved_6: u10,
@@ -69,17 +52,26 @@ const hfrosccfg_struct = packed struct {
     hfroscen: bool,
     /// Ring Oscillator Ready (RO)
     hfroscrdy: bool,
-};
+}).new(prci_base_address + 0x0);
 
-const hfxosccfg_struct = packed struct {
+/// An external high-frequency 16 MHz crystal oscillator (HFXOSC) can be used to
+/// provide a precise clock source.
+/// The HFXOSC is controlled via the memory-mapped hfxosccfg register.
+pub const hfxosccfg = SymmetricRegister(u32, packed struct {
     _reserved_0: u29,
     /// Crystal Oscillator Enable (RW)
     hfxoscen: bool,
     /// Crystal Oscillator Ready (RO)
     hfxoscrdy: bool,
-};
+}).new(prci_base_address + 0x4);
 
-const pllcfg_struct = packed struct {
+/// The PLL generates a high-frequency clock by multiplying a mid-frequency
+/// reference source clock, either the HFROSC or the HFXOSC. The input frequency
+/// to the PLL can be in the range 6–48 MHz. The PLL can generate output
+/// clock frequencies in the range 48–384 MHz.
+/// The PLL is controlled by a memory-mapped read-write pllcfg register in the
+/// PRCI address space.
+pub const pllcfg = SymmetricRegister(u32, packed struct {
     /// PLL R Value (RW)
     pllr: u3,
     _reserved_3: u1,
@@ -110,13 +102,14 @@ const pllcfg_struct = packed struct {
     _reserved_19: u12,
     /// PLL Lock (RO)
     plllock: bool,
-};
+}).new(prci_base_address + 0x8);
 
-const plloutdiv_struct = packed struct {
+/// The plloutdiv register controls a clock divider that divides the output of the PLL.
+pub const plloutdiv = SymmetricRegister(u32, packed struct {
     /// PLL Final Divider Value (RW)
     plloutdiv: u6,
     _reserved_6: u2,
     /// PLL Final Divide By 1 (RW)
     plloutdivby1: bool,
     _reserved_9: u23,
-};
+}).new(prci_base_address + 0xC);

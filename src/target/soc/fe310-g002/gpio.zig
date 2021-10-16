@@ -4,8 +4,8 @@
 //! selecting between various sources of the controls for these signals. The
 //! GPIO controller allows separate configuration of each of ngpio (32) GPIO
 //! bits.
-
-const Register = @import("../../../register.zig").Register;
+//!
+//! - FE310-G002 manual v1p1, Chapter 17
 
 pub fn setupUart0Gpio() void {
     setGpioRegister(16, iof_sel, 0);
