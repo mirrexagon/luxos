@@ -104,8 +104,8 @@ SECTIONS {
 
     __data_source_start = LOADADDR(.data);
     __data_source_end = LOADADDR(.data) + SIZEOF(.data);
-    __data_target_start = ADDR(.data);
-    __data_target_end = ADDR(.data) + SIZEOF(.data);
+    __data_dest_start = ADDR(.data);
+    __data_dest_end = ADDR(.data) + SIZEOF(.data);
 
     .data : {
         *(.sdata .sdata.* .data .data.*)
