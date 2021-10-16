@@ -4,9 +4,10 @@
 //! name.
 //! - FE310-G002 manual v1p1, section 6.2
 
-const Register = @import("../../../register.zig").Register;
+// Note: The manual lists a procmoncfg register but does not describe it.
+// https://forums.sifive.com/t/fe310-g002-v1p0-manual-errata/4751
 
-const prci_base_address = 0x1000_8000;
+const Register = @import("../../../register.zig").Register;
 
 pub fn useExternalCrystalOscillator() void {
     hfrosccfg.modify(.{
@@ -32,6 +33,8 @@ pub fn useExternalCrystalOscillator() void {
         .hfroscen = false,
     });
 }
+
+const prci_base_address = 0x1000_8000;
 
 /// An internal trimmable high-frequency ring oscillator (HFROSC) is used to
 /// provide the default clock after reset, and can be used to allow operation
