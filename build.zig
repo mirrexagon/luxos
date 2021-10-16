@@ -4,6 +4,7 @@ const Builder = std.build.Builder;
 const Target = std.Target;
 const CrossTarget = std.zig.CrossTarget;
 const LibExeObjStep = std.build.LibExeObjStep;
+const FileSource = std.build.FileSource;
 const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
@@ -16,7 +17,7 @@ pub fn build(b: *Builder) void {
         .os_tag = Target.Os.Tag.freestanding,
         .abi = Target.Abi.none,
     });
-    kernel.setLinkerScriptPath("src/target/board/hifive1-revb/linker.ld");
+    kernel.setLinkerScriptPath(FileSource.relative("src/target/board/hifive1-revb/linker.ld"));
 
     // https://github.com/ziglang/zig/issues/5558
     kernel.code_model = .medium;

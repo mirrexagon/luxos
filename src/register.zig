@@ -94,4 +94,6 @@ test "register" {
     };
 
     const reg = Register(u32, pin_cnf_val, pin_cnf_val).new(0x708);
+
+    _ = reg;
 }
