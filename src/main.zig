@@ -2,11 +2,7 @@ const prci = @import("target/soc/fe310-g002/prci.zig");
 const gpio = @import("target/soc/fe310-g002/gpio.zig");
 const uart = @import("target/soc/fe310-g002/uart.zig");
 
-const lua = @cImport({
-    @cInclude("lua.h");
-    @cInclude("lauxlib.h");
-    @cInclude("lualib.h");
-});
+const lua = @import("lua.zig");
 
 pub fn kmain() noreturn {
     prci.useExternalCrystalOscillator();
@@ -15,9 +11,11 @@ pub fn kmain() noreturn {
     uart.Uart0.setBaudRate();
     uart.Uart0.enableTx();
 
-    for ("This is Luxos!\r\n") |c| {
+    for ("Welcome to Luxos!\r\n") |c| {
         uart.Uart0.writeByte(c);
     }
+
+    const L = lua.new(null);
 
     while (true) {}
 }
