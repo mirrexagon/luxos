@@ -22,7 +22,7 @@ pub fn build(b: *Builder) void {
         // https://github.com/ziglang/zig/issues/5558
         kernel.code_model = .medium;
 
-        // add_lua(kernel);
+        add_lua(kernel);
         kernel.install();
     }
 
@@ -42,7 +42,7 @@ pub fn build(b: *Builder) void {
 }
 
 fn add_lua(item: *LibExeObjStep) void {
-    const lua_src_dir = "deps/lua-5.4.0/src/";
+    const lua_src_dir = "deps/lua-5.4.3/src/";
 
     const lua_c_files = .{
         "lapi.c",
@@ -65,6 +65,7 @@ fn add_lua(item: *LibExeObjStep) void {
         "lundump.c",
         "lvm.c",
         "lzio.c",
+
         "lauxlib.c",
         "lbaselib.c",
         "lcorolib.c",
