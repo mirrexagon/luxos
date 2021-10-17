@@ -8,49 +8,25 @@ const FileSource = std.build.FileSource;
 const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
-    // Main executable.
     const kernel = b.addExecutable("kernel.elf", "src/start.zig");
-    kernel.setBuildMode(b.standardReleaseOptions());
-    kernel.setTarget(CrossTarget{
-        .cpu_arch = Target.Cpu.Arch.riscv32,
-        .cpu_model = .{ .explicit = &Target.riscv.cpu.sifive_e31 },
-        .os_tag = Target.Os.Tag.freestanding,
-        .abi = Target.Abi.none,
-    });
-    kernel.setLinkerScriptPath(FileSource.relative("src/target/board/hifive1-revb/linker.ld"));
+    {
+        kernel.setBuildMode(b.standardReleaseOptions());
+        kernel.setTarget(CrossTarget{
+            .cpu_arch = Target.Cpu.Arch.riscv32,
+            .cpu_model = .{ .explicit = &Target.riscv.cpu.sifive_e31 },
+            .os_tag = Target.Os.Tag.freestanding,
+            .abi = Target.Abi.none,
+        });
+        kernel.setLinkerScriptPath(FileSource.relative("src/target/board/hifive1-revb/linker.ld"));
 
-    // https://github.com/ziglang/zig/issues/5558
-    kernel.code_model = .medium;
+        // https://github.com/ziglang/zig/issues/5558
+        kernel.code_model = .medium;
 
-    // add_lua(kernel);
-    kernel.install();
+        // add_lua(kernel);
+        kernel.install();
+    }
 
-    const run_objcopy = b.addSystemCommand(&[_][]const u8{
-        "riscv64-unknown-linux-gnu-objcopy", "zig-out/bin/kernel.elf",
-        "-O",                                "ihex",
-        "zig-out/bin/kernel.hex",
-    });
-    run_objcopy.step.dependOn(&kernel.step);
-
-    b.default_step.dependOn(&run_objcopy.step);
-
-    // Flash using J-Link Commander.
-    const flash_step = b.step("flash", "Flash to connected HiFive1 Rev B board");
-    const flash_cmd = b.addSystemCommand(&[_][]const u8{
-        "JLinkExe",
-        "-device",
-        "FE310",
-        "-if",
-        "JTAG",
-        "-speed",
-        "4000",
-        "-jtagconf",
-        "-1,-1",
-        "-CommandFile",
-        "src/target/board/hifive1-revb/flash.jlink",
-    });
-    flash_cmd.step.dependOn(b.getInstallStep());
-    flash_step.dependOn(&flash_cmd.step);
+    b.default_step.dependOn(&kernel.step);
 
     const debug_step = b.step("debug", "Debug connected HiFive1 Rev B board");
     const debug_cmd = b.addSystemCommand(&[_][]const u8{
@@ -58,31 +34,11 @@ pub fn build(b: *Builder) void {
         "--command",
         "src/target/board/hifive1-revb/gdbcommands",
         "--layout",
-        "s-c", // Don't add expressions and terminal panels.
+        "s-c", // Don't add expressions table and terminal panels.
         "zig-out/bin/kernel.elf",
     });
     debug_cmd.step.dependOn(b.getInstallStep());
     debug_step.dependOn(&debug_cmd.step);
-
-    // Run in QEMU.
-    const run_step = b.step("run", "Run in QEMU");
-    const run_cmd = b.addSystemCommand(&[_][]const u8{
-        "qemu-system-riscv32",
-        "-nographic",
-        "-machine",
-        "sifive_e,revb=true",
-
-        // -kernel appears to load the binary into data RAM.
-        // https://github.com/qemu/qemu/blob/b8fb878aa2485fd41502295f0ff5362a67c8ba68/hw/riscv/sifive_e.c#L110
-        //
-        // So instead we use the -loader to place the kernel in flash at the location the bootloader jumps to.
-        // https://github.com/tock/tock/blob/7fcb3751f02dedc41ca8bbab42819b88cb4bdda8/boards/hifive1/README.md
-        // https://qemu.readthedocs.io/en/latest/system/generic-loader.html#loading-files
-        "-device",
-        "loader,file=zig-out/bin/kernel.elf",
-    });
-    run_cmd.step.dependOn(b.getInstallStep());
-    run_step.dependOn(&run_cmd.step);
 }
 
 fn add_lua(item: *LibExeObjStep) void {

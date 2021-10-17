@@ -1,3 +1,0 @@
-r
-loadfile zig-out/bin/kernel.hex
-exit

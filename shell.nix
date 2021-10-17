@@ -17,6 +17,9 @@ pkgs.mkShell {
 
     qemu
 
+    segger-jlink
+
+    ugdb
     gdb
     pkgs.pkgsCross.riscv64.buildPackages.binutils
   ];
