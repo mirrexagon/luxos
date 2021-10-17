@@ -17,7 +17,7 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
     const initial_stack_pointer_address = @ptrToInt(&__initial_stack_pointer);
     _ = asm volatile ("mv sp, a0"
         :
-        : [initial_stack_pointer_address] "{a0}" (initial_stack_pointer_address)
+        : [initial_stack_pointer_address] "{a0}" (initial_stack_pointer_address),
     );
 
     // Initialise data and BSS.
