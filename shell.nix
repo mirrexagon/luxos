@@ -17,6 +17,7 @@ pkgs.mkShell {
 
     qemu
 
+    gdb
     pkgs.pkgsCross.riscv64.buildPackages.binutils
   ];
 }

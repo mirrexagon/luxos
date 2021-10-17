@@ -52,6 +52,16 @@ pub fn build(b: *Builder) void {
     flash_cmd.step.dependOn(b.getInstallStep());
     flash_step.dependOn(&flash_cmd.step);
 
+    const debug_step = b.step("debug", "Debug connected HiFive1 Rev B board");
+    const debug_cmd = b.addSystemCommand(&[_][]const u8{
+        "gdb",
+        "-ex",
+        "target remote localhost:2331",
+        "zig-out/bin/kernel.elf",
+    });
+    debug_cmd.step.dependOn(b.getInstallStep());
+    debug_step.dependOn(&debug_cmd.step);
+
     // Run in QEMU.
     const run_step = b.step("run", "Run in QEMU");
     const run_cmd = b.addSystemCommand(&[_][]const u8{
