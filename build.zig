@@ -34,8 +34,26 @@ pub fn build(b: *Builder) void {
 
     b.default_step.dependOn(&run_objcopy.step);
 
+    // Flash using J-Link Commander.
+    const flash_step = b.step("flash", "Flash to connected HiFive1 Rev B board");
+    const flash_cmd = b.addSystemCommand(&[_][]const u8{
+        "JLinkExe",
+        "-device",
+        "FE310",
+        "-if",
+        "JTAG",
+        "-speed",
+        "4000",
+        "-jtagconf",
+        "-1,-1",
+        "-CommandFile",
+        "src/target/board/hifive1-revb/flash.jlink",
+    });
+    flash_cmd.step.dependOn(b.getInstallStep());
+    flash_step.dependOn(&flash_cmd.step);
+
     // Run in QEMU.
-    const run_step = b.step("run", "Run the kernel in QEMU");
+    const run_step = b.step("run", "Run in QEMU");
     const run_cmd = b.addSystemCommand(&[_][]const u8{
         "qemu-system-riscv32",
         "-nographic",
