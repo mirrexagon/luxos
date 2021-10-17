@@ -57,6 +57,8 @@ pub fn build(b: *Builder) void {
         "ugdb",
         "--command",
         "src/target/board/hifive1-revb/gdbcommands",
+        "--layout",
+        "s-c", // Don't add expressions and terminal panels.
         "zig-out/bin/kernel.elf",
     });
     debug_cmd.step.dependOn(b.getInstallStep());

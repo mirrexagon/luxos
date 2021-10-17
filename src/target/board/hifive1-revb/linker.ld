@@ -129,12 +129,13 @@ SECTIONS {
 
     __stack_size = 1K;
 
-    .stack ORIGIN(ram) + LENGTH(ram) - __stack_size : {
+    .stack ORIGIN(ram) + LENGTH(ram) - __stack_size : ALIGN(16) {
         /*
         The stack pointer needs to be aligned to 16 bytes and can initially
         point to a non-existent word (eg. just past the end of RAM), as per the
         RISC-V calling convention.
-        TODO: Add reference to ELF/ABI/calling convention document.
+
+        https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-cc.adoc
         */
         __initial_stack_pointer = ADDR(.stack) + __stack_size;
     } >ram AT>ram

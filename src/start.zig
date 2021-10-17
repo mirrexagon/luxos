@@ -13,11 +13,13 @@ extern var __bss_end: u8;
 extern var __initial_stack_pointer: u8;
 
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
-    // Set up stack pointer.
-    const initial_stack_pointer_address = @ptrToInt(&__initial_stack_pointer);
-    _ = asm volatile ("mv sp, a0"
+    // Set up stack and frame pointers.
+    _ = asm volatile (
+        \\mv sp, a0
+        \\mv fp, sp
         :
-        : [initial_stack_pointer_address] "{a0}" (initial_stack_pointer_address),
+        : [initial_stack_pointer_address] "{a0}" (@ptrToInt(&__initial_stack_pointer)),
+        : "sp", "fp"
     );
 
     // Initialise data and BSS.
