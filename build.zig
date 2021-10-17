@@ -66,25 +66,31 @@ fn add_lua(item: *LibExeObjStep) void {
         "lvm.c",
         "lzio.c",
 
-        "lauxlib.c",
-        "lbaselib.c",
-        "lcorolib.c",
-        "ldblib.c",
-        "liolib.c",
-        "lmathlib.c",
-        "loadlib.c",
-        "loslib.c",
-        "lstrlib.c",
-        "ltablib.c",
-        "lutf8lib.c",
-        "linit.c",
+        // "lauxlib.c",
+        // "lbaselib.c",
+        // "lcorolib.c",
+        // "ldblib.c",
+        // "liolib.c",
+        // "lmathlib.c",
+        // "loadlib.c",
+        // "loslib.c",
+        // "lstrlib.c",
+        // "ltablib.c",
+        // "lutf8lib.c",
+        // "linit.c",
     };
 
-    const lua_cflags = .{ "-std=c11", "-pedantic", "-Wall", "-Wextra" };
+    const lua_cflags = .{
+        "-std=c11",
+        //"-pedantic", "-Wall", "-Wextra"
+    };
 
     inline for (lua_c_files) |c_file| {
         item.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);
     }
 
     item.addIncludeDir(lua_src_dir);
+    item.addIncludeDir("src/libc/include");
+
+    item.defineCMacro("lua_getlocaledecpoint()", "(\".\")");
 }
