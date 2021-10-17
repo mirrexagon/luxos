@@ -54,9 +54,9 @@ pub fn build(b: *Builder) void {
 
     const debug_step = b.step("debug", "Debug connected HiFive1 Rev B board");
     const debug_cmd = b.addSystemCommand(&[_][]const u8{
-        "gdb",
-        "-ex",
-        "target remote localhost:2331",
+        "ugdb",
+        "--command",
+        "src/target/board/hifive1-revb/gdbcommands",
         "zig-out/bin/kernel.elf",
     });
     debug_cmd.step.dependOn(b.getInstallStep());
