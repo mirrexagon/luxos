@@ -23,8 +23,16 @@ pub fn build(b: *Builder) void {
     kernel.code_model = .medium;
 
     // add_lua(kernel);
-
     kernel.install();
+
+    const run_objcopy = b.addSystemCommand(&[_][]const u8{
+        "riscv64-unknown-linux-gnu-objcopy", "zig-out/bin/kernel.elf",
+        "-O",                                "ihex",
+        "zig-out/bin/kernel.hex",
+    });
+    run_objcopy.step.dependOn(&kernel.step);
+
+    b.default_step.dependOn(&run_objcopy.step);
 
     // Run in QEMU.
     const run_step = b.step("run", "Run the kernel in QEMU");
