@@ -15,7 +15,7 @@ pub fn kmain() noreturn {
         uart.Uart0.writeByte(c);
     }
 
-    const L = lua.new(null);
+    _ = lua.new(null);
 
     while (true) {}
 }
