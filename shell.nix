@@ -17,10 +17,9 @@ pkgs.mkShell {
 
     qemu
 
-    segger-jlink
-
-    ugdb
     gdb
     pkgs.pkgsCross.riscv64.buildPackages.binutils
-  ];
+  ]
+  ++ lib.optional (pkgs ? ugdb) ugdb
+  ++ lib.optional (pkgs ? segger-jlink) segger-jlink;
 }
