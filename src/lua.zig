@@ -1,4 +1,5 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 pub const lua = @cImport({
     @cInclude("lua.h");
@@ -6,7 +7,7 @@ pub const lua = @cImport({
     // @cInclude("lualib.h");
 });
 
-pub fn new(allocator: *std.mem.Allocator) !*lua.lua_State {
+pub fn new(allocator: *Allocator) !*lua.lua_State {
     return lua.lua_newstate(luaAlloc, allocator) orelse return error.OutOfMemory;
 }
 
@@ -16,8 +17,8 @@ fn luaAlloc(ud: ?*c_void, ptr: ?*c_void, osize: usize, nsize: usize) callconv(.C
     // ?*c_void has an alignment of 1, but the Allocator struct has a larger
     // alignment. We know that ud is a pointer to an Allocator (as passed in
     // new()) and so this is okay.
-    const allocator_aligned = @alignCast(@alignOf(std.mem.Allocator), ud);
-    const allocator = @ptrCast(*std.mem.Allocator, allocator_aligned);
+    const allocator_aligned = @alignCast(@alignOf(Allocator), ud);
+    const allocator = @ptrCast(*Allocator, allocator_aligned);
 
     // malloc() in C guarantees valid alignment for any type, so we must match
     // that guarantee.
@@ -25,8 +26,8 @@ fn luaAlloc(ud: ?*c_void, ptr: ?*c_void, osize: usize, nsize: usize) callconv(.C
     // This method of determining the required alignment is from here:
     // https://github.com/ziglang/zig/blob/2117fbdae35dddf368c4ce5bb39cc73fa0f78d4c/lib/include/__stddef_max_align_t.h
     const alignment = @alignOf(extern struct {
-        one: c_longlong align(@alignOf(c_longlong)),
-        two: c_longdouble align(@alignOf(c_longdouble)),
+        one: c_longlong,
+        two: c_longdouble,
     });
 
     // The memory pointed to by ptr was allocated by this function and so has

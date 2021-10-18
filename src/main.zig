@@ -1,6 +1,10 @@
-const prci = @import("target/soc/fe310-g002/prci.zig");
-const gpio = @import("target/soc/fe310-g002/gpio.zig");
-const uart = @import("target/soc/fe310-g002/uart.zig");
+const std = @import("std");
+const mem = std.mem;
+
+const fe310 = @import("target/soc/fe310-g002.zig");
+const prci = fe310.prci;
+const gpio = fe310.gpio;
+const uart = fe310.uart;
 
 const lua = @import("lua.zig");
 
