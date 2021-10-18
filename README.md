@@ -8,7 +8,9 @@ The files in `deps` and `inspiration` are under their own licenses - see those d
 The name "Luxos" is just a mutation of "LuaOS".
 
 ## Status
-I'm using this project as an excuse to write startup and peripheral code for the FE310-G002 (the SoC on the HiFive1 Rev B) from scratch, as well as the rest of the operating system. Actually using Lua has not happened yet.
+I'm using this project as an excuse to write startup and peripheral code for the FE310-G002 (the SoC on the HiFive1 Rev B) from scratch, as well as the rest of the operating system.
+
+I am currently working on getting the Lua core running. The short-term goal is to get a Lua state successfully initialised (without any libraries/modules for now) and a REPL available over UART.
 
 The FE310-G002 has only 16 KiB of data RAM which is almost certainly not enough to do much interesting in Lua, so I will probably end up switching to running in QEMU with a RV64GC CPU. Once I get Lua running then we will see how far I can get with it.
 
