@@ -11,6 +11,18 @@ Resources keep track of provider (eg. Kernel provides low level peripherals, pro
 
 Scheme and path system like Redox?
 
+---
+
+Look into global pointer and thread pointer and see if the Zig compiler expects them to be initialized in a certain way
+
+`la` load address pseudo instruction instead of loading stack pointer into a0 then from there into sp?
+
+QEMU GDB
+
+Teal (typed Lua)
+
+See how Redox does IRQs (file scheme)
+
 ## Booting with U-Boot and OpenSBI
 - https://github.com/riscv/opensbi/blob/master/docs/platform/qemu_virt.md
 - https://github.com/u-boot/u-boot/blob/master/doc/board/emulation/qemu-riscv.rst
@@ -23,3 +35,6 @@ See Early Boot in Linux for expected state: https://www.sifive.com/blog/all-aboa
 
 ## Nice panics in Zig bare metal
 https://andrewkelley.me/post/zig-stack-traces-kernel-panic-bare-bones-os.html
+
+## Lua notes
+- Can override many things in luaconf.h and lauxlib.h, eg. lua_writeline() is used to implement print() but can be overriden by redefining it, see lauxlib.h
