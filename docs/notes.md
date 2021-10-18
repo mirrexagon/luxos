@@ -9,7 +9,8 @@ Processes can create and expose resources for other processes to take, eg. I2C d
 
 Resources keep track of provider (eg. Kernel provides low level peripherals, processes can provide virtual resources like a single I2C device) and owner (which process has exclusive access to the resource) - eg. Provider ID 0 is the kernel, otherwise is process ID
 
-Scheme and path system like Redox?
+See how Redox does IRQs (files and file events)
+https://changelog.com/podcast/280#transcript-33
 
 ---
 
@@ -21,7 +22,7 @@ QEMU GDB
 
 Teal (typed Lua)
 
-See how Redox does IRQs (file scheme)
+
 
 ## Booting with U-Boot and OpenSBI
 - https://github.com/riscv/opensbi/blob/master/docs/platform/qemu_virt.md
