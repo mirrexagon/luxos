@@ -10,7 +10,7 @@ extern var __data_dest_end: u8;
 extern var __bss_start: u8;
 extern var __bss_end: u8;
 
-extern var __initial_stack_pointer: u8;
+extern var __stack_end: u8;
 
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
     // Set up stack and frame pointers.
@@ -18,7 +18,7 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
         \\mv sp, a0
         \\mv fp, sp
         :
-        : [initial_stack_pointer_address] "{a0}" (@ptrToInt(&__initial_stack_pointer)),
+        : [initial_stack_pointer_address] "{a0}" (@ptrToInt(&__stack_end))
         : "sp", "fp"
     );
 

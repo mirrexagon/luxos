@@ -116,16 +116,23 @@ SECTIONS {
     but the VMA is in RAM.
     */
 
-    __bss_start = ADDR(.bss);
-    __bss_end = ADDR(.bss) + SIZEOF(.bss);
-
     .bss : {
+        __bss_start = .;
         *(.sbss .sbss.* .bss .bss.*)
+        __bss_end = .;
     } >ram AT>ram
     /*
     Zero-initialised data (.bss) does need to be writable but doesn't need
     anything loaded from flash. So it is entirely in RAM.
     */
+
+    /* All memory after .bss and before .stack is the heap. */
+    .heap : ALIGN(16) {
+        __heap_start = .;
+
+        . = ORIGIN(ram) + LENGTH(ram) - __stack_size;
+        __heap_end = .;
+    } >ram AT>ram
 
     __stack_size = 1K;
 
@@ -137,6 +144,10 @@ SECTIONS {
 
         https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-cc.adoc
         */
-        __initial_stack_pointer = ADDR(.stack) + __stack_size;
+
+        __stack_start = .;
+
+        . = ADDR(.stack) + __stack_size;
+        __stack_end = .;
     } >ram AT>ram
 }
