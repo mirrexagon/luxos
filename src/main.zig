@@ -7,6 +7,7 @@ const prci = fe310.prci;
 const gpio = fe310.gpio;
 const uart = fe310.uart;
 
+const libc = @import("libc.zig");
 const lua = @import("lua.zig");
 
 extern var __heap_start: u8;
