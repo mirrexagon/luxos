@@ -8,21 +8,24 @@ const FileSource = std.build.FileSource;
 const builtin = @import("builtin");
 
 pub fn build(b: *Builder) void {
+    const target = CrossTarget{
+        .cpu_arch = Target.Cpu.Arch.riscv32,
+        .cpu_model = .{ .explicit = &Target.riscv.cpu.sifive_e31 },
+        .os_tag = Target.Os.Tag.freestanding,
+        .abi = Target.Abi.none,
+    };
+
     const kernel = b.addExecutable("kernel.elf", "src/start.zig");
     {
         kernel.setBuildMode(b.standardReleaseOptions());
-        kernel.setTarget(CrossTarget{
-            .cpu_arch = Target.Cpu.Arch.riscv32,
-            .cpu_model = .{ .explicit = &Target.riscv.cpu.sifive_e31 },
-            .os_tag = Target.Os.Tag.freestanding,
-            .abi = Target.Abi.none,
-        });
+        kernel.setTarget(target);
         kernel.setLinkerScriptPath(FileSource.relative("src/target/board/hifive1-revb/linker.ld"));
 
         // https://github.com/ziglang/zig/issues/5558
         kernel.code_model = .medium;
 
         add_lua(kernel);
+        add_libc(b, target, kernel);
         kernel.install();
     }
 
@@ -93,4 +96,18 @@ fn add_lua(item: *LibExeObjStep) void {
     item.addIncludeDir("src/libc/include");
 
     item.defineCMacro("lua_getlocaledecpoint()", "(\".\")");
+}
+
+fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
+    const libc_src_dir = "src/libc/";
+
+    const libc_files = .{
+        .{ "string", "string.zig" },
+    };
+
+    inline for (libc_files) |file| {
+        const obj = b.addObject(file.@"0", libc_src_dir ++ file.@"1");
+        obj.setTarget(target);
+        item.addObject(obj);
+    }
 }
