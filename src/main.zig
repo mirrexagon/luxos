@@ -1,6 +1,6 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const ThreadSafeFixedBufferAllocator = std.heap.ThreadSafeFixedBufferAllocator;
+const heap = std.heap;
 
 const fe310 = @import("target/soc/fe310-g002.zig");
 const prci = fe310.prci;
@@ -25,15 +25,25 @@ pub fn kmain() noreturn {
 
     const heap_size = @ptrToInt(&__heap_end) - @ptrToInt(&__heap_start);
     const heap_start_pointer = @ptrCast([*]u8, &__heap_start);
-    const heap = heap_start_pointer[0..heap_size];
+    const heap_slice = heap_start_pointer[0..heap_size];
 
-    var heap_allocator = ThreadSafeFixedBufferAllocator.init(heap);
+    var heap_allocator = heap.ThreadSafeFixedBufferAllocator.init(heap_slice);
+    var logging_allocator = heap.loggingAllocator(&heap_allocator.allocator);
 
-    _ = lua.new(&heap_allocator.allocator) catch {
+    _ = lua.new(&logging_allocator.allocator) catch {
         for ("Creating Lua state failed\r\n") |c| {
             uart.Uart0.writeByte(c);
         }
     };
 
     while (true) {}
+}
+
+pub fn log(
+    comptime level: std.log.Level,
+    comptime scope: @TypeOf(.EnumLiteral),
+    comptime format: []const u8,
+    args: anytype,
+) void {
+    // TODO
 }
