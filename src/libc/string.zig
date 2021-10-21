@@ -4,7 +4,7 @@ const mem = std.mem;
 const expectEqual = @import("testutil.zig").expectEqual;
 
 // Note: Often, C return is non-const, but const is here to satisfy Zig.
-//
+
 export fn strchr(str: [*:0]const u8, ch: c_int) ?*const u8 {
     var i: usize = 0;
     while (str[i] != 0) : (i += 1) {
@@ -31,8 +31,14 @@ test "strchr" {
 }
 
 export fn strpbrk(dest: [*:0]const u8, breakset: [*:0]const u8) ?*const u8 {
-    _ = dest;
-    _ = breakset;
+    var i: usize = 0;
+
+    while (dest[i] != 0) : (i += 1) {
+        if (strchr(breakset, dest[i]) != null) {
+            return &dest[i];
+        }
+    }
+
     return null;
 }
 
