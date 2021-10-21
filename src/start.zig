@@ -1,4 +1,13 @@
-const mem = @import("std").mem;
+const std = @import("std");
+const mem = std.mem;
+const heap = std.heap;
+const fmt = std.fmt;
+const Allocator = std.mem.Allocator;
+
+const fe310 = @import("target/soc/fe310-g002.zig");
+const prci = fe310.prci;
+const gpio = fe310.gpio;
+const uart = fe310.uart;
 
 const kmain = @import("main.zig").kmain;
 
@@ -12,13 +21,19 @@ extern var __bss_end: u8;
 
 extern var __stack_end: u8;
 
+extern var __heap_start: u8;
+extern var __heap_end: u8;
+
+var _main_allocator: heap.LoggingAllocator(.debug, .crit) = undefined;
+var main_allocator: *Allocator = undefined;
+
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
     // Set up stack and frame pointers.
     _ = asm volatile (
         \\mv sp, a0
         \\mv fp, sp
         :
-        : [initial_stack_pointer_address] "{a0}" (@ptrToInt(&__stack_end))
+        : [initial_stack_pointer_address] "{a0}" (@ptrToInt(&__stack_end)),
         : "sp", "fp"
     );
 
@@ -32,5 +47,46 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
     const bss_dest = @ptrCast([*]volatile u8, &__bss_start);
     for (bss_dest[0..bss_length]) |*b| b.* = 0;
 
-    kmain();
+    init_uart();
+    init_heap();
+
+    kmain(main_allocator);
+}
+
+fn init_uart() void {
+    prci.useExternalCrystalOscillator();
+    gpio.setupUart0Gpio();
+    uart.Uart0.setBaudRate();
+    uart.Uart0.enableTx();
+
+    uart.Uart0.writeString("UART0 initialized\r\n");
+}
+
+fn init_heap() void {
+    const heap_size = @ptrToInt(&__heap_end) - @ptrToInt(&__heap_start);
+    const heap_start_pointer = @ptrCast([*]u8, &__heap_start);
+    const heap_slice = heap_start_pointer[0..heap_size];
+
+    var heap_allocator = heap.ThreadSafeFixedBufferAllocator.init(heap_slice);
+
+    _main_allocator = heap.loggingAllocator(&heap_allocator.allocator);
+    main_allocator = &_main_allocator.allocator;
+
+    std.log.debug("Heap initialized", .{});
+}
+
+pub fn log(
+    comptime level: std.log.Level,
+    comptime scope: @TypeOf(.EnumLiteral),
+    comptime format: []const u8,
+    args: anytype,
+) void {
+    var buffer = [_]u8{0} ** 256;
+
+    const level_txt = comptime level.asText();
+    const prefix2 = if (scope == .default) " " else "(" ++ @tagName(scope) ++ ") ";
+
+    const string = fmt.bufPrint(&buffer, "[" ++ level_txt ++ "]" ++ prefix2 ++ format ++ "\r\n", args) catch return uart.Uart0.writeString("Log line did not fit in buffer!\r\n");
+
+    uart.Uart0.writeString(string);
 }

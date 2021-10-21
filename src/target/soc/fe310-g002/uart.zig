@@ -23,7 +23,7 @@ fn Uart(base_address: usize) type {
             });
         }
 
-        pub fn writeString(string: []u8) void {
+        pub fn writeString(string: []const u8) void {
             for (string) |c| {
                 writeByte(c);
             }
