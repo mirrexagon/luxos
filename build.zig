@@ -103,6 +103,9 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
 
     const libc_files = .{
         .{ "string", "string.zig" },
+        .{ "stdlib", "stdlib.zig" },
+        .{ "time", "time.zig" },
+        .{ "math", "math.zig" },
     };
 
     inline for (libc_files) |file| {

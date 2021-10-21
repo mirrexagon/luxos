@@ -11,3 +11,4 @@ size_t strspn(const char *s1, const char *s2);
 char *strchr(const char *str, int ch);
 int strcmp(const char *lhs, const char *rhs);
 char *strpbrk(const char *dest, const char *breakset);
+int strcoll(const char *lhs, const char *rhs);
