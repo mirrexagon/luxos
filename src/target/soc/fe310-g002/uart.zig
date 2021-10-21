@@ -23,6 +23,12 @@ fn Uart(base_address: usize) type {
             });
         }
 
+        pub fn writeString(string: []u8) void {
+            for (string) |c| {
+                writeByte(c);
+            }
+        }
+
         pub fn writeByte(byte: u8) void {
             // Wait for TX FIFO to have space available.
             while (txdata.read().full) {}
