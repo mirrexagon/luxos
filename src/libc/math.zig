@@ -5,8 +5,7 @@ export fn pow(base: f64, exponent: f64) f64 {
 }
 
 export fn frexp(arg: f64, exp: *c_int) f64 {
-    if (arg == 0.0) {
-        exp.* = 0;
-        return 0.0;
-    }
+    const result = std.math.frexp(arg);
+    exp.* = result.exponent;
+    return result.significand;
 }
