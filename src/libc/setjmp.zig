@@ -14,6 +14,7 @@ export fn setjmp(env: *c.jmp_buf) c_int {
     // - This implementation assumes that there are no floating-point registers.
     //
     // TODO: Update for 64-bit and float/double when required.
+    // Querying CPU info: @import("builtin").target.cpu.arch, etc.
 
     // Store the required registers to env.
     // jmp_buf is basically an array of register-sized values.
