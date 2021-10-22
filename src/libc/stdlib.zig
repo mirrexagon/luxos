@@ -21,55 +21,43 @@ test "abs" {
     try expectEqual(0, abs(0));
 }
 
-export fn strtod(str: [*:0]const u8, str_end: **const u8) f64 {
-    var int_part: f64 = 0.0;
-    var frac_part: f64 = 0.0;
-    var base10exp: f64 = 0.0;
-    var sign: f64 = 1.0;
+export fn strtod(str: [*:0]const u8, str_end: ?**const u8) f64 {
+    var start: usize = 0;
+    var end: usize = 0;
 
-    var i: usize = 0;
-
-    // Skip whitespace.
-    while (isWhitespace(str[i])) : (i += 1) {}
-
-    // Determine sign.
-    if (str[i] == '-') {
-        i += 1;
-        sign = -1;
-    } else if (str[i] == '+') {
-        i += 1;
+    // Extract just the float part of the string.
+    while (isWhitespace(str[start])) : (start += 1) {}
+    if (str[start] == 0) {
+        return 0.0;
+    }
+    end = start;
+    while (isFloatPart(str[end])) : (end += 1) {}
+    if (str[end] == 0) {
+        return 0.0;
     }
 
-    while (str[i] != 0 and isDigit(str[i])) : (i += 1) {
-        int_part *= 10;
-        int_part += @intToFloat(f64, str[i] - '0');
-    }
+    const str_float_part = str[start..end];
 
-    if (str[i] == '.') {
-        i += 1;
-
-        while (str[i] != 0 and isDigit(str[i])) : (i += 1) {
-            frac_part += @intToFloat(f64, str[i] - '0');
-            frac_part *= 0.1;
+    const result = std.fmt.parseHexFloat(f64, str_float_part) catch std.fmt.parseFloat(f64, str_float_part) catch {
+        if (str_end) |non_null| {
+            non_null.* = &str[0];
         }
+        return 0.0;
+    };
+
+    if (str_end) |non_null| {
+        non_null.* = &str[end];
     }
 
-    if (str[i] == 'e' or str[i] == 'E') {
-        i += 1;
-
-        while (str[i] != 0 and isDigit(str[i])) : (i += 1) {
-            base10exp *= 10;
-            base10exp += @intToFloat(f64, str[i] - '0');
-        }
-    }
-
-    str_end.* = &str[i];
-
-    return sign * int_part + frac_part;
+    return result;
 }
 
 fn isWhitespace(c: u8) bool {
     return c == ' ' or c == '\x0c' or c == '\n' or c == '\r' or c == '\x09' or c == '\x0b';
+}
+
+fn isFloatPart(c: u8) bool {
+    return isDigit(c) or c == '.' or c == 'e' or c == 'E' or c == 'x' or c == 'X' or c == '+' or c == '-' or c == 'n' or c == 'N' or c == 'a' or c == 'A' or c == 'i' or c == 'I' or c == 'p' or c == 'P';
 }
 
 fn isDigit(c: u8) bool {
