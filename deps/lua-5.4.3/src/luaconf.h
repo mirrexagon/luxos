@@ -596,7 +596,8 @@
 ** implementation.
 */
 #if !defined(LUA_USE_C89)
-#define lua_strx2number(s,p)		lua_str2number(s,p)
+// luxos: our strtod doesn't support hexadecimal.
+// #define lua_strx2number(s,p)		lua_str2number(s,p)
 #endif
 
 

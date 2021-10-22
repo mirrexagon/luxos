@@ -7,6 +7,11 @@ const LibExeObjStep = std.build.LibExeObjStep;
 const FileSource = std.build.FileSource;
 const builtin = @import("builtin");
 
+const cflags = .{
+    "-std=c11",
+    //"-pedantic", "-Wall", "-Wextra"
+};
+
 pub fn build(b: *Builder) void {
     const target = CrossTarget{
         .cpu_arch = Target.Cpu.Arch.riscv32,
@@ -83,13 +88,8 @@ fn add_lua(item: *LibExeObjStep) void {
         // "linit.c",
     };
 
-    const lua_cflags = .{
-        "-std=c11",
-        //"-pedantic", "-Wall", "-Wextra"
-    };
-
     inline for (lua_c_files) |c_file| {
-        item.addCSourceFile(lua_src_dir ++ c_file, &lua_cflags);
+        item.addCSourceFile(lua_src_dir ++ c_file, &cflags);
     }
 
     item.addIncludeDir(lua_src_dir);
@@ -115,4 +115,6 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
         obj.addIncludeDir("src/libc/include");
         item.addObject(obj);
     }
+
+    item.addCSourceFile(libc_src_dir ++ "snprintf.c", &cflags);
 }
