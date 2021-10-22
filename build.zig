@@ -107,6 +107,7 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
         .{ "time", "time.zig" },
         .{ "math", "math.zig" },
         .{ "setjmp", "setjmp.zig" },
+        .{ "ctype", "ctype.zig" },
     };
 
     inline for (libc_files) |file| {
