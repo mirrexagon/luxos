@@ -106,11 +106,13 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
         .{ "stdlib", "stdlib.zig" },
         .{ "time", "time.zig" },
         .{ "math", "math.zig" },
+        .{ "setjmp", "setjmp.zig" },
     };
 
     inline for (libc_files) |file| {
         const obj = b.addObject(file.@"0", libc_src_dir ++ file.@"1");
         obj.setTarget(target);
+        obj.addIncludeDir("src/libc/include");
         item.addObject(obj);
     }
 }
