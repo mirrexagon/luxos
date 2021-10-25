@@ -3,8 +3,7 @@ const std = @import("std");
 const expectEqual = @import("testutil.zig").expectEqual;
 
 export fn abort() noreturn {
-    // TODO: Panic
-    while (true) {}
+    std.debug.panic("abort() from libc was called");
 }
 
 export fn abs(n: c_int) c_int {

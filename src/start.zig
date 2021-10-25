@@ -90,3 +90,10 @@ pub fn log(
 
     uart.Uart0.writeString(string);
 }
+
+pub fn panic(message: []const u8, stack_trace: ?*builtin.StackTrace) noreturn {
+    uart.Uart0.writeString("\nLUXOS PANIC\n");
+    uart.Uart0.writeString(message);
+    uart.Uart0.writeString("\n");
+    while (true) {}
+}
