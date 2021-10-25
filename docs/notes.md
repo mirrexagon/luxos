@@ -39,3 +39,6 @@ https://andrewkelley.me/post/zig-stack-traces-kernel-panic-bare-bones-os.html
 
 ## Lua notes
 - Can override many things in luaconf.h and lauxlib.h, eg. lua_writeline() is used to implement print() but can be overriden by redefining it, see lauxlib.h
+
+# TODO
+- Enable memory protection (PMP) to get stack overflow detection?

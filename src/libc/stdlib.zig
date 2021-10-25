@@ -25,16 +25,9 @@ export fn strtod(str: [*:0]const u8, str_end: ?**const u8) f64 {
     var start: usize = 0;
     var end: usize = 0;
 
-    // Extract just the float part of the string.
-    while (isWhitespace(str[start])) : (start += 1) {}
-    if (str[start] == 0) {
-        return 0.0;
-    }
+    while (str[start] != 0 and isWhitespace(str[start])) : (start += 1) {}
     end = start;
-    while (isFloatPart(str[end])) : (end += 1) {}
-    if (str[end] == 0) {
-        return 0.0;
-    }
+    while (str[end] != 0) : (end += 1) {}
 
     const str_float_part = str[start..end];
 
@@ -56,14 +49,6 @@ fn isWhitespace(c: u8) bool {
     return c == ' ' or c == '\x0c' or c == '\n' or c == '\r' or c == '\x09' or c == '\x0b';
 }
 
-fn isFloatPart(c: u8) bool {
-    return isDigit(c) or c == '.' or c == 'e' or c == 'E' or c == 'x' or c == 'X' or c == '+' or c == '-' or c == 'n' or c == 'N' or c == 'a' or c == 'A' or c == 'i' or c == 'I' or c == 'p' or c == 'P';
-}
-
-fn isDigit(c: u8) bool {
-    return c >= '0' or c <= '9';
-}
-
 test "strtod" {
     var end: *u8 = undefined;
 
@@ -82,8 +67,10 @@ test "strtod" {
     try expectEqual(-1394.12998, strtod("-1394.12998", &end));
     try expectEqual(0, end.*);
 
-    try expectEqual(1394.12998, strtod("1394.12998abc", &end));
-    try expectEqual('a', end.*);
+    // Lua doesn't try to convert strings with trailing parts, so we don't need
+    // to support it.
+    // try expectEqual(1394.12998, strtod("1394.12998def", &end));
+    // try expectEqual('d', end.*);
 
     try expectEqual(-1394129.98, strtod("-1394.12998e3", &end));
     try expectEqual(0, end.*);
@@ -93,4 +80,11 @@ test "strtod" {
 
     try expectEqual(-1394.12998, strtod("  \n\r  -1394.12998", &end));
     try expectEqual(0, end.*);
+
+    try expectEqual(-0x71.3, strtod("-0x71.3", &end));
+    try expectEqual(0, end.*);
+
+    const testString = "not a number";
+    try expectEqual(0.0, strtod(testString, &end));
+    try expectEqual(testString[0], end.*);
 }
