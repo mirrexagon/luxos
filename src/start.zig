@@ -94,9 +94,9 @@ pub fn log(
 pub fn panic(message: []const u8, stack_trace: ?*std.builtin.StackTrace) noreturn {
     _ = stack_trace;
 
-    uart.Uart0.writeString("\nLUXOS PANIC\n");
+    uart.Uart0.writeString("\r\n!!! LUXOS PANIC !!!\r\n");
     uart.Uart0.writeString(message);
-    uart.Uart0.writeString("\n");
+    uart.Uart0.writeString("\r\n");
 
     while (true) {}
 }
