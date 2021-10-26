@@ -42,3 +42,5 @@ https://andrewkelley.me/post/zig-stack-traces-kernel-panic-bare-bones-os.html
 
 # TODO
 - Enable memory protection (PMP) to get stack overflow detection?
+- If I need to stub malloc so lauxlib compiles, will Zig's lazy analysis allownr to put a @compileError() there so I can catch if it actually would get called?
+- https://probe.rs/ instead of the JLink software
