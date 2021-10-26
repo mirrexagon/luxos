@@ -1,6 +1,8 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
+const riscv = @import("riscv.zig");
+
 const lua = @import("lua.zig");
 
 pub fn kmain(heap_allocator: *Allocator) noreturn {
