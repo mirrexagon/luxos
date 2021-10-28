@@ -1,1 +1,1 @@
-const csr = @import("csr.zig");
+pub const csr = @import("riscv/csr.zig");

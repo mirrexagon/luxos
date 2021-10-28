@@ -4,11 +4,11 @@
 
 const assert = @import("std").debug.assert;
 
-pub fn SymmetricRegister(comptime Inner: type, comptime ReadWrite: type) type {
-    return Register(Inner, ReadWrite, ReadWrite);
+pub fn Register(comptime Inner: type, comptime ReadWrite: type) type {
+    return AsymmetricRegister(Inner, ReadWrite, ReadWrite);
 }
 
-pub fn Register(comptime Inner: type, comptime Read: type, comptime Write: type) type {
+pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Write: type) type {
     assert(@bitSizeOf(Read) == @bitSizeOf(Inner));
     assert(@bitSizeOf(Write) == @bitSizeOf(Inner));
 

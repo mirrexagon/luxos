@@ -2,7 +2,7 @@
 //!
 //! See FE310-G002 manual v1p1, Chapter 18
 
-const Register = @import("../../../register.zig").SymmetricRegister;
+const Register = @import("../../../mmio_register.zig").Register;
 
 pub const Uart0 = Uart(0x1001_3000);
 pub const Uart1 = Uart(0x1002_3000);

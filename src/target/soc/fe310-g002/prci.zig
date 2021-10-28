@@ -8,7 +8,7 @@
 // Note: The manual lists a procmoncfg register but does not describe it.
 // https://forums.sifive.com/t/fe310-g002-v1p0-manual-errata/4751
 
-const Register = @import("../../../register.zig").SymmetricRegister;
+const Register = @import("../../../mmio_register.zig").Register;
 
 pub fn useExternalCrystalOscillator() void {
     hfrosccfg.modify(.{

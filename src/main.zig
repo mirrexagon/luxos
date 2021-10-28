@@ -22,7 +22,7 @@ pub fn kmain(heap_allocator: *Allocator) noreturn {
     while (true) {}
 }
 
-fn logSystemInfo void {
+fn logSystemInfo() void {
 
     // TODO: Log some stuff from CSRs such as misa
 }
