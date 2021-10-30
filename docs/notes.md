@@ -1,4 +1,4 @@
-## Design notes
+## OS Design notes
 - Each process is a separate Lua state, and they communicate via an external IPC mechanism, probably message passing. Check out effil for an example implementation of message passing.
 - All scripts run in kernel mode. Permissions are done by denying scripts access to functions/modules.
 
@@ -16,13 +16,9 @@ https://changelog.com/podcast/280#transcript-33
 
 Look into global pointer and thread pointer and see if the Zig compiler expects them to be initialized in a certain way
 
-`la` load address pseudo instruction instead of loading stack pointer into a0 then from there into sp?
-
 QEMU GDB
 
 Teal (typed Lua)
-
-
 
 ## Booting with U-Boot and OpenSBI
 - https://github.com/riscv/opensbi/blob/master/docs/platform/qemu_virt.md
@@ -34,13 +30,15 @@ We want to do it this way and not just start the kernel in machine mode to be po
 
 See Early Boot in Linux for expected state: https://www.sifive.com/blog/all-aboard-part-6-booting-a-risc-v-linux-kernel
 
+FE310-G002 may have device tree accessible: https://www.eevblog.com/forum/microcontrollers/sifive-fe310-g002/msg2457483/#msg2457483
+
 ## Nice panics in Zig bare metal
 https://andrewkelley.me/post/zig-stack-traces-kernel-panic-bare-bones-os.html
 
 ## Lua notes
 - Can override many things in luaconf.h and lauxlib.h, eg. lua_writeline() is used to implement print() but can be overriden by redefining it, see lauxlib.h
+- If I need to stub malloc so lauxlib compiles, will Zig's lazy analysis allownr to put a @compileError() there so I can catch if it actually would get called?
 
 # TODO
 - Enable memory protection (PMP) to get stack overflow detection?
-- If I need to stub malloc so lauxlib compiles, will Zig's lazy analysis allownr to put a @compileError() there so I can catch if it actually would get called?
 - https://probe.rs/ instead of the JLink software
