@@ -8,22 +8,11 @@ pub fn Csr(comptime csr: u12, comptime Inner: type) type {
         const Self = @This();
 
         pub fn read() Inner {
-            const csrValue = asm volatile ("csrr %[ret], %[csr]"
-                : [ret] "=r" (-> usize),
-                : [csr] "i" (csr),
-            );
-
-            return @bitCast(Inner, csrValue);
+            return @bitCast(Inner, Self.readRaw());
         }
 
         pub fn write(value: Inner) void {
-            const csrValue = @bitCast(usize, value);
-
-            asm volatile ("csrw %[csr], %[csrValue]"
-                :
-                : [csr] "i" (csr),
-                  [csrValue] "r" (csrValue),
-            );
+            Self.writeRaw(@bitCast(usize, value));
         }
 
         pub fn modify(new_value: anytype) void {
@@ -40,6 +29,21 @@ pub fn Csr(comptime csr: u12, comptime Inner: type) type {
             }
 
             Self.write(value);
+        }
+
+        pub fn readRaw() usize {
+            return asm volatile ("csrr %[ret], %[csr]"
+                : [ret] "=r" (-> usize),
+                : [csr] "i" (csr),
+            );
+        }
+
+        pub fn writeRaw(value: usize) void {
+            asm volatile ("csrw %[csr], %[value]"
+                :
+                : [csr] "i" (csr),
+                  [value] "r" (value),
+            );
         }
     };
 }

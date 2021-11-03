@@ -33,7 +33,7 @@ pub const misa = Csr(0x301, packed struct {
     },
     _reserved_26: u4, // TODO: This is bigger in RV64, dynamically determine the size of this.
     mxl: enum(u2) {
-        _reserved = 0,
+        unknown = 0,
         xlen32 = 1,
         xlen64 = 2,
         xlen128 = 3,
