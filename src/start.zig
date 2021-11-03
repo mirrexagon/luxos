@@ -30,10 +30,10 @@ var main_allocator: *Allocator = undefined;
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
     // Set up stack and frame pointers.
     _ = asm volatile (
-        \\mv sp, a0
+        \\mv sp, %[initial_stack_pointer_address]
         \\mv fp, sp
         :
-        : [initial_stack_pointer_address] "{a0}" (@ptrToInt(&__stack_end)),
+        : [initial_stack_pointer_address] "r" (@ptrToInt(&__stack_end)),
         : "sp", "fp"
     );
 
@@ -81,6 +81,7 @@ pub fn log(
     comptime format: []const u8,
     args: anytype,
 ) void {
+    // TODO: Make this smaller.
     var buffer = [_]u8{0} ** 1024;
 
     const level_txt = comptime level.asText();
