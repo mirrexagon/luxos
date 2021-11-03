@@ -81,7 +81,7 @@ pub fn log(
     comptime format: []const u8,
     args: anytype,
 ) void {
-    var buffer = [_]u8{0} ** 256;
+    var buffer = [_]u8{0} ** 1024;
 
     const level_txt = comptime level.asText();
     const prefix2 = if (scope == .default) " " else "(" ++ @tagName(scope) ++ ") ";

@@ -53,7 +53,7 @@ fn Uart(base_address: usize) type {
             _reserved_8: u22 = 0,
             /// Transmit FIFO full (RO)
             full: bool = false,
-        }).new(base_address + 0x0);
+        }).init(base_address + 0x0);
 
         /// Reading the rxdata register dequeues a character from the receive
         /// FIFO and returns the value in the data field. The empty flag
@@ -65,7 +65,7 @@ fn Uart(base_address: usize) type {
             _reserved_8: u23,
             /// Receive FIFO empty (RO)
             empty: bool,
-        }).new(base_address + 0x4);
+        }).init(base_address + 0x4);
 
         /// The read-write txctrl register controls the operation of the
         /// transmit channel. The txen bit controls whether the Tx channel
@@ -84,7 +84,7 @@ fn Uart(base_address: usize) type {
             /// The threshold at which the TX FIFO watermark interrupt triggers.
             txcnt: u3,
             _reserved_19: u13,
-        }).new(base_address + 0x08);
+        }).init(base_address + 0x08);
 
         /// The read-write rxctrl register controls the operation of the receive
         /// channel. The rxen bit controls whether the Rx channel is active.
@@ -103,7 +103,7 @@ fn Uart(base_address: usize) type {
             /// The threshold at which the RX FIFO watermark interrupt triggers.
             rxcnt: u3,
             _reserved_19: u13,
-        }).new(base_address + 0x0C);
+        }).init(base_address + 0x0C);
 
         /// The read-write ie register controls which UART interrupts are
         /// enabled.
@@ -123,7 +123,7 @@ fn Uart(base_address: usize) type {
             /// Receive watermark interrupt enable.
             rxwm: bool,
             _reserved_2: u30,
-        }).new(base_address + 0x10);
+        }).init(base_address + 0x10);
 
         /// The ip register is a read-only register indicating the pending
         /// interrupt conditions. See ie for more details.
@@ -133,12 +133,12 @@ fn Uart(base_address: usize) type {
             /// Receive watermark interrupt pending.
             rxwm: bool,
             _reserved_2: u30,
-        }).new(base_address + 0x14);
+        }).init(base_address + 0x14);
 
         const div = Register(u32, packed struct {
             /// Baud rate divisor.
             div: u16,
             _reserved_16: u16,
-        }).new(base_address + 0x18);
+        }).init(base_address + 0x18);
     };
 }

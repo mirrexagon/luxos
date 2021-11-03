@@ -52,7 +52,7 @@ pub const hfrosccfg = Register(u32, packed struct {
     hfroscen: bool,
     /// Ring Oscillator Ready (RO)
     hfroscrdy: bool,
-}).new(prci_base_address + 0x0);
+}).init(prci_base_address + 0x0);
 
 /// An external high-frequency 16 MHz crystal oscillator (HFXOSC) can be used to
 /// provide a precise clock source.
@@ -63,7 +63,7 @@ pub const hfxosccfg = Register(u32, packed struct {
     hfxoscen: bool,
     /// Crystal Oscillator Ready (RO)
     hfxoscrdy: bool,
-}).new(prci_base_address + 0x4);
+}).init(prci_base_address + 0x4);
 
 /// The PLL generates a high-frequency clock by multiplying a mid-frequency
 /// reference source clock, either the HFROSC or the HFXOSC. The input frequency
@@ -102,7 +102,7 @@ pub const pllcfg = Register(u32, packed struct {
     _reserved_19: u12,
     /// PLL Lock (RO)
     plllock: bool,
-}).new(prci_base_address + 0x8);
+}).init(prci_base_address + 0x8);
 
 /// The plloutdiv register controls a clock divider that divides the output of the PLL.
 pub const plloutdiv = Register(u32, packed struct {
@@ -112,4 +112,4 @@ pub const plloutdiv = Register(u32, packed struct {
     /// PLL Final Divide By 1 (RW)
     plloutdivby1: bool,
     _reserved_9: u23,
-}).new(prci_base_address + 0xC);
+}).init(prci_base_address + 0xC);

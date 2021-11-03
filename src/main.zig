@@ -12,17 +12,16 @@ pub fn kmain(heap_allocator: *Allocator) noreturn {
 
     // TODO: Install machine mode trap handler to catch whatever is happening in the allocator when initialising Lua.
 
-    _ = lua.new(heap_allocator) catch {
-        std.log.emerg("Lua state creation failed", .{});
-        @panic("Lua init failed");
-    };
-
-    std.log.info("Lua state created", .{});
+    // _ = lua.new(heap_allocator) catch {
+    //     std.log.emerg("Lua state creation failed", .{});
+    //     @panic("Lua init failed");
+    // };
+    // std.log.info("Lua state created", .{});
+    _ = heap_allocator;
 
     while (true) {}
 }
 
 fn logSystemInfo() void {
-
-    // TODO: Log some stuff from CSRs such as misa
+    std.log.debug("misa: {}", .{riscv.mcsr.misa.read()});
 }

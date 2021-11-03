@@ -17,7 +17,7 @@ pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Wr
 
         const Self = @This();
 
-        pub fn new(address: usize) Self {
+        pub fn init(address: usize) Self {
             return .{ .raw_ptr = @intToPtr(*volatile Inner, address) };
         }
 
