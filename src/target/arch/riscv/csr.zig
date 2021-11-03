@@ -1,8 +1,12 @@
 const std = @import("std");
 const assert = std.debug.assert;
 
+const riscv = @import("../riscv.zig");
+
 pub fn Csr(comptime csr: u12, comptime Inner: type) type {
-    assert(@bitSizeOf(Inner) == @bitSizeOf(usize));
+    comptime {
+        assert(@bitSizeOf(Inner) == riscv.xlen);
+    }
 
     return struct {
         const Self = @This();

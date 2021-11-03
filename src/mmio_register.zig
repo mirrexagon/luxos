@@ -9,8 +9,10 @@ pub fn Register(comptime Inner: type, comptime ReadWrite: type) type {
 }
 
 pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Write: type) type {
-    assert(@bitSizeOf(Read) == @bitSizeOf(Inner));
-    assert(@bitSizeOf(Write) == @bitSizeOf(Inner));
+    comptime {
+        assert(@bitSizeOf(Read) == @bitSizeOf(Inner));
+        assert(@bitSizeOf(Write) == @bitSizeOf(Inner));
+    }
 
     return struct {
         raw_ptr: *volatile Inner,

@@ -1,6 +1,7 @@
 const std = @import("std");
 
-const Csr = @import("../riscv.zig").Csr;
+const riscv = @import("../riscv.zig");
+const Csr = riscv.Csr;
 
 // Machine Information Registers
 pub const mvendorid = Csr(0xF11);
@@ -40,7 +41,7 @@ pub const misa = Csr(0x301, packed struct {
         y: bool,
         z: bool,
     },
-    _reserved_26: u4, // TODO: This is bigger in RV64, dynamically determine the size of this.
+    _reserved_26: riscv.unsignedIntegerWithSize(riscv.xlen - 28),
     mxl: enum(u2) {
         unknown = 0,
         xlen32 = 1,
