@@ -15,11 +15,14 @@ export fn setjmp(env: *c.jmp_buf) c_int {
     //
     // TODO: Update for 64-bit and float/double when required.
     // Querying CPU info: @import("builtin").target.cpu.arch, etc.
+    //
+    std.debug.assert(@import("builtin").cpu.arch == .riscv32);
 
     // Store the required registers to env.
     // jmp_buf is basically an array of register-sized values.
     // We store the contents of all the registers we need to there.
     // a0 is the pointer to the jmp_buf.
+    //
     _ = asm volatile (
         \\sw ra, 0(a0)
         \\sw sp, 4(a0)
