@@ -22,6 +22,4 @@ pub fn kmain(heap_allocator: *Allocator) noreturn {
     while (true) {}
 }
 
-fn logSystemInfo() void {
-    std.log.debug("misa: {}", .{riscv.mcsr.misa.read()});
-}
+fn logSystemInfo() void {}

@@ -4,10 +4,13 @@ const riscv = @import("../riscv.zig");
 const Csr = riscv.Csr;
 
 // Machine Information Registers
-pub const mvendorid = Csr(0xF11);
-pub const marchid = Csr(0xF12);
-pub const mimpid = Csr(0xF13);
-pub const mhartid = Csr(0xF14);
+pub const mvendorid = Csr(0xF11, packed struct { offset: u7, bank: u25, _reserved_32: riscv.unsignedIntegerWithSize(riscv.xlen - 32) });
+
+pub const marchid = Csr(0xF12, riscv.unsignedIntegerWithSize(riscv.xlen));
+
+pub const mimpid = Csr(0xF13, riscv.unsignedIntegerWithSize(riscv.xlen));
+
+pub const mhartid = Csr(0xF14, riscv.unsignedIntegerWithSize(riscv.xlen));
 
 // Machine Trap Setup
 pub const mstatus = Csr(0x300);
