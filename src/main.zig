@@ -8,8 +8,6 @@ const lua = @import("lua.zig");
 pub fn kmain(heap_allocator: *Allocator) noreturn {
     std.log.notice("Welcome to Luxos!", .{});
 
-    logSystemInfo();
-
     // TODO: Install machine mode trap handler to catch whatever is happening in the allocator when initialising Lua.
 
     // _ = lua.new(heap_allocator) catch {
@@ -21,5 +19,3 @@ pub fn kmain(heap_allocator: *Allocator) noreturn {
 
     while (true) {}
 }
-
-fn logSystemInfo() void {}
