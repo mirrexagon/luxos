@@ -13,7 +13,54 @@ pub const mimpid = Csr(0xF13, riscv.unsignedIntegerWithSize(riscv.xlen));
 pub const mhartid = Csr(0xF14, riscv.unsignedIntegerWithSize(riscv.xlen));
 
 // Machine Trap Setup
-pub const mstatus = Csr(0x300);
+pub const mstatus = Csr(0x300, if (riscv.arch == .riscv32) packed struct {
+    uie: bool,
+    sie: bool,
+    _reserved_2: bool,
+    mie: bool,
+    upie: bool,
+    spie: bool,
+    _reserved_6: bool,
+    mpie: bool,
+    spp: u1,
+    _reserved_9: u2,
+    mpp: u2,
+    fs: u2,
+    xs: u2,
+    mprv: bool,
+    sum: bool,
+    mxr: bool,
+    tvm: bool,
+    tw: bool,
+    tsr: bool,
+    _reserved_23: u8,
+    sd: bool,
+} else if (riscv.arch == .riscv64) packed struct {
+    uie: bool,
+    sie: bool,
+    _reserved_2: bool,
+    mie: bool,
+    upie: bool,
+    spie: bool,
+    _reserved_6: bool,
+    mpie: bool,
+    spp: u1,
+    _reserved_9: u2,
+    mpp: u2,
+    fs: u2,
+    xs: u2,
+    mprv: bool,
+    sum: bool,
+    mxr: bool,
+    tvm: bool,
+    tw: bool,
+    tsr: bool,
+    _reserved_23: u9,
+    uxl: u2,
+    sxl: u2,
+    _reserved_36: riscv.unsignedIntegerWithSize(64 - 37),
+    sd: bool,
+} else @compileError("Unsupported architecture"));
 
 pub const misa = Csr(0x301, packed struct {
     extensions: packed struct {

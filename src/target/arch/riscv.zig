@@ -4,9 +4,8 @@ pub const mcsr = @import("riscv/mcsr.zig");
 pub const scsr = @import("riscv/scsr.zig");
 pub const ucsr = @import("riscv/ucsr.zig");
 
-const std = @import("std");
-
 pub const xlen = @bitSizeOf(usize);
+pub const arch = @import("builtin").cpu.arch;
 
 pub fn unsignedIntegerWithSize(bits: u16) type {
     return @Type(.{ .Int = .{ .signedness = .unsigned, .bits = bits } });

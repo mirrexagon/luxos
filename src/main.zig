@@ -17,5 +17,7 @@ pub fn kmain(heap_allocator: *Allocator) noreturn {
     // std.log.info("Lua state created", .{});
     _ = heap_allocator;
 
+    _ = riscv.mcsr.mstatus.read();
+
     while (true) {}
 }
