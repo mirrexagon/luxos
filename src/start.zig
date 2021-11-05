@@ -24,7 +24,7 @@ extern var __stack_end: u8;
 extern var __heap_start: u8;
 extern var __heap_end: u8;
 
-var _main_allocator: heap.LoggingAllocator(.debug, .crit) = undefined;
+var _main_allocator: heap.LoggingAllocator(.debug, .err) = undefined;
 var main_allocator: *Allocator = undefined;
 
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {

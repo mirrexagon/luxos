@@ -8,8 +8,8 @@ pkgs.mkShell {
       src = fetchFromGitHub {
         owner = "ziglang";
         repo = oldAttrs.pname;
-        rev = "0536c25578fa15e2326eb1061f6db61d6ad3cd65";
-        hash = "sha256-xxb3jSvmrGHm7KiEo9CiHNxNmT0C+wiyJp9pYwKQBgo=";
+        rev = "e97feb96e4daf7d53538c9c8773d50459a59e5ee";
+        hash = "sha256-d35Ffobsi/RiZ0V9/I8gFPZxv8nrekQWhYX7tTZdn7w=";
       };
     })).override {
       llvmPackages = llvmPackages_13;
