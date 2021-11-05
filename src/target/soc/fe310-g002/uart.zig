@@ -49,8 +49,8 @@ fn Uart(base_address: usize) type {
         /// non-zero return value indicating the character was not accepted.
         const txdata = Register(u32, packed struct {
             /// Transmit data (RW)
-            data: u9, // TODO: Should be u8 but that makes the size of this struct 5 bytes for some reason.
-            _reserved_8: u22 = 0,
+            data: u8,
+            _reserved_8: u23 = 0,
             /// Transmit FIFO full (RO)
             full: bool = false,
         }).init(base_address + 0x0);
