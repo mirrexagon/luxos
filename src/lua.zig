@@ -13,8 +13,8 @@ pub fn new(allocator: *Allocator) !*lua.lua_State {
 
 /// Function used as the Lua state allocator function, bridging between the Lua
 /// allocator function contract and Zig allocators.
-fn luaAlloc(ud: ?*c_void, ptr: ?*c_void, osize: usize, nsize: usize) callconv(.C) ?*c_void {
-    // ?*c_void has an alignment of 1, but the Allocator struct has a larger
+fn luaAlloc(ud: ?*anyopaque, ptr: ?*anyopaque, osize: usize, nsize: usize) callconv(.C) ?*anyopaque {
+    // ?*anyopaque has an alignment of 1, but the Allocator struct has a larger
     // alignment. We know that ud is a pointer to an Allocator (as passed in
     // new()) and so this is okay.
     const allocator_aligned = @alignCast(@alignOf(Allocator), ud);

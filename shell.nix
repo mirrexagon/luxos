@@ -5,11 +5,13 @@ pkgs.mkShell {
     ((zig.overrideAttrs (oldAttrs: {
       version = "git";
 
+      # Version with fix for packed struct size issues.
+      # https://github.com/ziglang/zig/pull/11279
       src = fetchFromGitHub {
-        owner = "ziglang";
+        owner = "igor84";
         repo = oldAttrs.pname;
-        rev = "a18bf7a7bfa4e8c32aa25295cfa1ca768e5f5b74";
-        hash = "sha256-Hfl1KKtGcopMrn+U9r0/qr/wReWJIgb8+IgwMoguv/0=";
+        rev = "109e730c8ccdfe144f568f232578ab600ef4f33c";
+        hash = "sha256-fEeO6g7bCvpiNJWkQdBVbBCr42giknuZndHowPq1BgU=";
       };
     })).override {
       llvmPackages = llvmPackages_13;
