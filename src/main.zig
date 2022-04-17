@@ -5,8 +5,8 @@ const riscv = @import("target/arch/riscv.zig");
 
 const lua = @import("lua.zig");
 
-pub fn kmain(heap_allocator: *Allocator) noreturn {
-    std.log.notice("Welcome to Luxos!", .{});
+pub fn kmain(heap_allocator: Allocator) noreturn {
+    std.log.info("Welcome to Luxos!", .{});
 
     // TODO: Install machine mode trap handler to catch whatever is happening in the allocator when initialising Lua.
 

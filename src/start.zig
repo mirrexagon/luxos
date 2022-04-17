@@ -25,7 +25,7 @@ extern var __heap_start: u8;
 extern var __heap_end: u8;
 
 var _main_allocator: heap.LoggingAllocator(.debug, .err) = undefined;
-var main_allocator: *Allocator = undefined;
+var main_allocator: Allocator = undefined;
 
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
     // Set up stack and frame pointers.
@@ -67,10 +67,10 @@ fn init_heap() void {
     const heap_start_pointer = @ptrCast([*]u8, &__heap_start);
     const heap_slice = heap_start_pointer[0..heap_size];
 
-    var heap_allocator = heap.ThreadSafeFixedBufferAllocator.init(heap_slice);
+    var heap_allocator = heap.FixedBufferAllocator.init(heap_slice);
 
-    _main_allocator = heap.loggingAllocator(&heap_allocator.allocator);
-    main_allocator = &_main_allocator.allocator;
+    _main_allocator = heap.loggingAllocator(heap_allocator.allocator());
+    main_allocator = _main_allocator.allocator();
 
     std.log.debug("Heap initialized", .{});
 }
