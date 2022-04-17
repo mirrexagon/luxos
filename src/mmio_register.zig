@@ -2,6 +2,9 @@
 //!
 //! Adapted from https://scattered-thoughts.net/writing/mmio-in-zig
 
+// TODO: Use atomicRmw?
+// https://reddit.com/comments/u4kc0j/comment/i4wycmb?context=3
+
 const assert = @import("std").debug.assert;
 
 pub fn Register(comptime Inner: type, comptime ReadWrite: type) type {

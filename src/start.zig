@@ -67,6 +67,7 @@ fn init_heap() void {
     const heap_start_pointer = @ptrCast([*]u8, &__heap_start);
     const heap_slice = heap_start_pointer[0..heap_size];
 
+    // TODO: Use thread safe allocator?
     var heap_allocator = heap.FixedBufferAllocator.init(heap_slice);
 
     _main_allocator = heap.loggingAllocator(heap_allocator.allocator());
