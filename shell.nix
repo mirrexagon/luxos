@@ -8,10 +8,10 @@ pkgs.mkShell {
       # Version with fix for packed struct size issues.
       # https://github.com/ziglang/zig/pull/11279
       src = fetchFromGitHub {
-        owner = "igor84";
+        owner = "ziglang";
         repo = oldAttrs.pname;
-        rev = "109e730c8ccdfe144f568f232578ab600ef4f33c";
-        hash = "sha256-fEeO6g7bCvpiNJWkQdBVbBCr42giknuZndHowPq1BgU=";
+        rev = "cf20b97b713d992d84fdd8935ef935f61ed6d747";
+        hash = "sha256-j9/+TkjAy6H4saltz6l5s0BrHfmP56LDocOD4tP2RmI=";
       };
     })).override {
       llvmPackages = llvmPackages_13;
