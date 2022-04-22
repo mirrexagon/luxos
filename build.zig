@@ -96,6 +96,8 @@ fn add_lua(item: *LibExeObjStep) void {
     item.addIncludeDir("src/libc/include");
 
     item.defineCMacro("lua_getlocaledecpoint()", "(\".\")");
+    item.defineCMacro("LUA_USE_APICHECK", "1");
+    item.defineCMacro("LUAI_ASSERT", "1");
 }
 
 fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
@@ -108,6 +110,7 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
         .{ "math", "math.zig" },
         .{ "setjmp", "setjmp.zig" },
         .{ "ctype", "ctype.zig" },
+        .{ "assert", "assert.zig" },
     };
 
     inline for (libc_files) |file| {
