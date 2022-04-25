@@ -14,16 +14,16 @@ pub const mhartid = Csr(0xF14, riscv.unsignedIntegerWithSize(riscv.xlen));
 
 // Machine Trap Setup
 pub const mstatus = Csr(0x300, if (riscv.arch == .riscv32) packed struct {
-    uie: bool,
+    _reserved_0: bool,
     sie: bool,
     _reserved_2: bool,
     mie: bool,
-    upie: bool,
+    _reserved_4: bool,
     spie: bool,
-    _reserved_6: bool,
+    ube: bool,
     mpie: bool,
     spp: u1,
-    _reserved_9: u2,
+    vs: u2,
     mpp: u2,
     fs: u2,
     xs: u2,
@@ -36,16 +36,16 @@ pub const mstatus = Csr(0x300, if (riscv.arch == .riscv32) packed struct {
     _reserved_23: u8,
     sd: bool,
 } else if (riscv.arch == .riscv64) packed struct {
-    uie: bool,
+    _reserved_0: bool,
     sie: bool,
     _reserved_2: bool,
     mie: bool,
-    upie: bool,
+    _reserved_4: bool,
     spie: bool,
-    _reserved_6: bool,
+    ube: bool,
     mpie: bool,
     spp: u1,
-    _reserved_9: u2,
+    vs: u2,
     mpp: u2,
     fs: u2,
     xs: u2,
@@ -58,7 +58,9 @@ pub const mstatus = Csr(0x300, if (riscv.arch == .riscv32) packed struct {
     _reserved_23: u9,
     uxl: u2,
     sxl: u2,
-    _reserved_36: riscv.unsignedIntegerWithSize(64 - 37),
+    sbe: bool,
+    mbe: bool,
+    _reserved_38: u25,
     sd: bool,
 } else @compileError("Unsupported architecture"));
 
@@ -103,7 +105,15 @@ pub const misa = Csr(0x301, packed struct {
 pub const medeleg = Csr(0x302);
 pub const mideleg = Csr(0x303);
 pub const mie = Csr(0x304);
-pub const mtvec = Csr(0x305);
+
+pub const mtvec = Csr(0x305, packed struct {
+    mode: enum(u2) {
+        direct = 0,
+        vectored = 1,
+    },
+    base: riscv.unsignedIntegerWithSize(riscv.xlen - 2),
+});
+
 pub const mcounteren = Csr(0x306);
 
 // Machine Trap Handling
