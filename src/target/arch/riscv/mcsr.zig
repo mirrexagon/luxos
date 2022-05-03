@@ -102,9 +102,9 @@ pub const misa = Csr(0x301, packed struct {
     },
 });
 
-pub const medeleg = Csr(0x302);
-pub const mideleg = Csr(0x303);
-pub const mie = Csr(0x304);
+pub const medeleg = Csr(0x302, usize);
+pub const mideleg = Csr(0x303, usize);
+pub const mie = Csr(0x304, usize);
 
 pub const mtvec = Csr(0x305, packed struct {
     mode: enum(u2) {
@@ -114,11 +114,16 @@ pub const mtvec = Csr(0x305, packed struct {
     base: riscv.unsignedIntegerWithSize(riscv.xlen - 2),
 });
 
-pub const mcounteren = Csr(0x306);
+//pub const mcounteren = Csr(0x306);
 
 // Machine Trap Handling
-pub const mscratch = Csr(0x340);
-pub const mepc = Csr(0x341);
-pub const mcause = Csr(0x342);
-pub const mtval = Csr(0x343);
-pub const mip = Csr(0x344);
+pub const mscratch = Csr(0x340, usize);
+pub const mepc = Csr(0x341, usize);
+
+pub const mcause = Csr(0x342, packed struct {
+    exceptioncode: riscv.unsignedIntegerWithSize(riscv.xlen - 1),
+    interrupt: bool,
+});
+
+pub const mtval = Csr(0x343, usize);
+pub const mip = Csr(0x344, usize);
