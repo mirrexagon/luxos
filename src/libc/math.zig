@@ -12,6 +12,10 @@ export fn frexp(arg: f64, exp: *c_int) f64 {
     return result.significand;
 }
 
+export fn ldexp(arg: f64, exp: c_int) f64 {
+    return std.math.ldexp(arg, exp);
+}
+
 export fn _fabs(arg: f64) f64 {
     return std.math.fabs(arg);
 }

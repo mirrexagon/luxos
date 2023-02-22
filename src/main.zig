@@ -11,7 +11,8 @@ pub fn kmain(heap_allocator: Allocator) noreturn {
 
     std.log.debug("mstatus: {}", .{riscv.mcsr.mstatus.read()});
 
-    riscv.mcsr.mtvec.write(.{ .mode = .direct, .base = @truncate(u30, @ptrToInt(trapHandler) >> 2) });
+    const trap_handler_ptr: *const fn () align(4) callconv(.Naked) void = trapHandler;
+    riscv.mcsr.mtvec.write(.{ .mode = .direct, .base = @truncate(u30, @ptrToInt(trap_handler_ptr) >> 2) });
     std.log.debug("mtvec: {}", .{riscv.mcsr.mtvec.read()});
 
     // TODO: Install machine mode trap handler to catch whatever is happening in

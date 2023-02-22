@@ -7,6 +7,6 @@ pub const ucsr = @import("riscv/ucsr.zig");
 pub const xlen = @bitSizeOf(usize);
 pub const arch = @import("builtin").cpu.arch;
 
-pub fn unsignedIntegerWithSize(bits: u16) type {
+pub fn unsignedIntegerWithSize(comptime bits: u16) type {
     return @Type(.{ .Int = .{ .signedness = .unsigned, .bits = bits } });
 }

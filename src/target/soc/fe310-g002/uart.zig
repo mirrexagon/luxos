@@ -7,7 +7,7 @@ const Register = @import("../../../mmio_register.zig").Register;
 pub const Uart0 = Uart(0x1001_3000);
 pub const Uart1 = Uart(0x1002_3000);
 
-fn Uart(base_address: usize) type {
+fn Uart(comptime base_address: usize) type {
     return struct {
         pub fn setBaudRate() void {
             // For now, hardcode to 115200 assuming a 16 MHz tlclk.

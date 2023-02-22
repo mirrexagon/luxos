@@ -92,12 +92,15 @@ pub fn log(
     uart.Uart0.writeString(string);
 }
 
-pub fn panic(message: []const u8, stack_trace: ?*std.builtin.StackTrace) noreturn {
+pub fn panic(message: []const u8, stack_trace: ?*std.builtin.StackTrace, ret_addr: ?usize) noreturn {
     _ = stack_trace;
+    _ = ret_addr;
 
     uart.Uart0.writeString("\r\n!!! LUXOS PANIC !!!\r\n");
     uart.Uart0.writeString(message);
     uart.Uart0.writeString("\r\n");
 
-    while (true) {}
+    while (true) {
+        @breakpoint();
+    }
 }
