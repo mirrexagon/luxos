@@ -92,8 +92,8 @@ fn add_lua(item: *LibExeObjStep) void {
         item.addCSourceFile(lua_src_dir ++ c_file, &cflags);
     }
 
-    item.addIncludeDir(lua_src_dir);
-    item.addIncludeDir("src/libc/include");
+    item.addIncludePath(lua_src_dir);
+    item.addIncludePath("src/libc/include");
 
     item.defineCMacro("lua_getlocaledecpoint()", "(\".\")");
     item.defineCMacro("LUA_USE_APICHECK", "1");
@@ -116,7 +116,7 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
     inline for (libc_files) |file| {
         const obj = b.addObject(file.@"0", libc_src_dir ++ file.@"1");
         obj.setTarget(target);
-        obj.addIncludeDir("src/libc/include");
+        obj.addIncludePath("src/libc/include");
         item.addObject(obj);
     }
 
