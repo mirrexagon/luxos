@@ -95,7 +95,7 @@ fn add_lua(item: *LibExeObjStep) void {
     item.addIncludePath(lua_src_dir);
     item.addIncludePath("src/libc/include");
 
-    item.defineCMacro("lua_getlocaledecpoint()", "(\".\")");
+    item.defineCMacro("lua_getlocaledecpoint()", "('.')");
     item.defineCMacro("LUA_USE_APICHECK", "1");
     item.defineCMacro("LUAI_ASSERT", "1");
 }
