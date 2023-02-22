@@ -30,7 +30,7 @@ export fn strtod(str: [*:0]const u8, str_end: ?**const u8) f64 {
 
     const str_float_part = str[start..end];
 
-    const result = std.fmt.parseHexFloat(f64, str_float_part) catch std.fmt.parseFloat(f64, str_float_part) catch {
+    const result = std.fmt.parseFloat(f64, str_float_part) catch {
         if (str_end) |non_null| {
             non_null.* = &str[0];
         }
