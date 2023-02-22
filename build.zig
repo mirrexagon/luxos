@@ -50,7 +50,7 @@ pub fn build(b: *Builder) void {
 }
 
 fn add_lua(item: *LibExeObjStep) void {
-    const lua_src_dir = "deps/lua-5.4.3/src/";
+    const lua_src_dir = "deps/lua-5.4.4/src/";
 
     const lua_c_files = .{
         "lapi.c",
