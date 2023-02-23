@@ -25,7 +25,12 @@ pub fn kmain(heap_allocator: Allocator) noreturn {
 
     std.log.info("Lua state created", .{});
 
-    _ = lua;
+    clua.lua_pushinteger(lua.L, 1);
+    clua.lua_pushinteger(lua.L, 1);
+    clua.lua_arith(lua.L, clua.LUA_OPADD);
+    var result = clua.lua_tointeger(lua.L, -1);
+
+    std.log.info("Lua calculated: 1 + 1 = {}", .{result});
 
     while (true) {}
 }
