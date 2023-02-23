@@ -10,6 +10,10 @@ const builtin = @import("builtin");
 const cflags = .{
     "-std=c11",
     //"-pedantic", "-Wall", "-Wextra"
+
+    // Lua fails some undefined behaviour checks, so in the interests of not
+    // having to modify Lua, we turn off the checks.
+    "-fno-sanitize=undefined",
 };
 
 pub fn build(b: *Builder) void {
