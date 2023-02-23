@@ -33,7 +33,7 @@ pub fn kmain(heap_allocator: Allocator) noreturn {
 fn trapHandler() align(4) callconv(.Naked) void {
     var mcause = riscv.mcsr.mcause.read();
 
-    std.log.info("Trap: mcause {}", .{mcause});
+    std.log.info("Trap: mcause {}", .{mcause.code});
 
     @panic("Trapped");
 }

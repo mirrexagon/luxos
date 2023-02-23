@@ -120,10 +120,33 @@ pub const mtvec = Csr(0x305, packed struct {
 pub const mscratch = Csr(0x340, usize);
 pub const mepc = Csr(0x341, usize);
 
-pub const mcause = Csr(0x342, packed struct {
-    exceptioncode: riscv.unsignedIntegerWithSize(riscv.xlen - 1),
-    interrupt: bool,
-});
+const interrupt_bit = 1 << riscv.xlen - 1;
+pub const mcause = Csr(0x342, packed struct { code: enum(usize) {
+    instruction_address_misaligned = 0,
+    instruction_access_fault = 1,
+    illegal_instruction = 2,
+    breakpoint = 3,
+    load_address_misaligned = 4,
+    load_access_fault = 5,
+    store_amo_address_misaligned = 6,
+    store_amo_access_fault = 7,
+    environment_call_from_u_mode = 8,
+    environment_call_from_s_mode = 9,
+    environment_call_from_m_mode = 11,
+    instruction_page_faul = 12,
+    load_page_fault = 13,
+    store_amo_page_fault = 15,
+
+    user_software_interrupt = 0 | interrupt_bit,
+    supervisor_software_interrupt = 1 | interrupt_bit,
+    machine_software_interrupt = 3 | interrupt_bit,
+    user_timer_interrupt = 4 | interrupt_bit,
+    supervisor_timer_interrupt = 5 | interrupt_bit,
+    machine_timer_interrupt = 7 | interrupt_bit,
+    user_external_interrupt = 8 | interrupt_bit,
+    supervisor_external_interrupt = 9 | interrupt_bit,
+    machine_external_interrupt = 11 | interrupt_bit,
+} });
 
 pub const mtval = Csr(0x343, usize);
 pub const mip = Csr(0x344, usize);
