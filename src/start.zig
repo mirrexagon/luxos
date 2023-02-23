@@ -100,7 +100,5 @@ pub fn panic(message: []const u8, stack_trace: ?*std.builtin.StackTrace, ret_add
     uart.Uart0.writeString(message);
     uart.Uart0.writeString("\r\n");
 
-    while (true) {
-        @breakpoint();
-    }
+    while (true) {}
 }
