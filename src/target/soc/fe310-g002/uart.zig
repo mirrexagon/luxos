@@ -4,16 +4,16 @@
 
 const Register = @import("../../../mmio_register.zig").Register;
 
+const prci = @import("prci.zig");
+
 pub const Uart0 = Uart(0x1001_3000);
 pub const Uart1 = Uart(0x1002_3000);
 
 fn Uart(comptime base_address: usize) type {
     return struct {
-        pub fn setBaudRate() void {
-            // For now, hardcode to 115200 assuming a 16 MHz tlclk.
-            // Value is from the manual, Section 18.9 Table 62.
+        pub fn setBaudRate(baud_rate: u32) void {
             div.modify(.{
-                .div = 138,
+                .div = @truncate(u16, (prci.getTlclkFrequencyHz() / baud_rate) - 1),
             });
         }
 

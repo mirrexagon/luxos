@@ -47,18 +47,20 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
     const bss_dest = @ptrCast([*]volatile u8, &__bss_start);
     for (bss_dest[0..bss_length]) |*b| b.* = 0;
 
+    prci.setupHfclk();
+
     init_uart();
     init_heap();
+
+    std.log.debug("hfclk is {}", .{prci.getHfclkFrequencyHz()});
 
     kmain(main_allocator);
 }
 
 fn init_uart() void {
-    prci.useExternalCrystalOscillator();
     gpio.setupUart0Gpio();
-    uart.Uart0.setBaudRate();
+    uart.Uart0.setBaudRate(115200);
     uart.Uart0.enableTx();
-
     uart.Uart0.writeString("UART0 initialized\r\n");
 }
 
