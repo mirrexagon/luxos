@@ -47,7 +47,7 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
     const bss_dest = @ptrCast([*]volatile u8, &__bss_start);
     for (bss_dest[0..bss_length]) |*b| b.* = 0;
 
-    prci.setupHfclk();
+    prci.setupClocks();
 
     init_uart();
     init_heap();

@@ -15,6 +15,10 @@ const math = @import("std").math;
 
 const Register = @import("../../../mmio_register.zig").Register;
 
+// TODO: Make fe310 stuff a package and always get from there (root importing
+// file), instead of reimporting the file.
+const aon = @import("aon.zig");
+
 const CRYSTAL_FREQUENCY_HZ = 16_000_000;
 
 pub fn getHfclkHz() u32 {
@@ -52,11 +56,22 @@ pub fn getTlclkHz() u32 {
     return getCoreClkHz();
 }
 
-pub fn setupLfclk() void {}
+pub fn setupClocks() void {
+    setupLfclk();
+    setupHfclk();
+}
 
-pub fn setupHfclk() void {
+fn setupLfclk() void {
+    // lfclk is already set to use the external source because the aon_lfclksel
+    // pin is pulled low in the board design.
+
+    // We can just disable the internal low-frequency oscillator.
+    aon.lfrosccfg.modify(.{ .lfroscen = false });
+}
+
+fn setupHfclk() void {
     // Reset clock setup to hfrosc if required.
-    if (pllcfg.read().pllsel == .pll) {
+    if (pllcfg.read().pllsel != .hfrosc) {
         hfrosccfg.modify(.{ .hfroscen = true });
         while (!hfrosccfg.read().hfroscrdy) {}
 
@@ -100,6 +115,7 @@ pub fn setupHfclk() void {
 
     // Wait 100 us for PLL to regain lock before checking plllock.
     // TODO: "I use 4 ticks of the 32 KHz low-frequency timer for this." - https://forums.sifive.com/t/something-i-learned-about-the-cpu-clock/2635
+    // Check CLINT (core local interruptor) block in section 9.1 - mtime register ticks with 32768 Hz LFCLK?
 
     while (!pllcfg.read().plllock) {}
 
