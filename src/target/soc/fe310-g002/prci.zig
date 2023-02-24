@@ -80,7 +80,7 @@ pub fn setupHfclk() void {
 
     // Set the PLL to turn the 16 MHz hfxosc into a 320 MHz signal.
     pllcfg.modify(.{
-        .pllbypass = true,
+        .pllbypass = false,
 
         // hfxosc = 16 MHz
         .pllrefsel = .hfxosc,
@@ -101,7 +101,7 @@ pub fn setupHfclk() void {
     // Wait 100 us for PLL to regain lock before checking plllock.
     // TODO: "I use 4 ticks of the 32 KHz low-frequency timer for this." - https://forums.sifive.com/t/something-i-learned-about-the-cpu-clock/2635
 
-    //while (!pllcfg.read().plllock) {}
+    while (!pllcfg.read().plllock) {}
 
     // Switch to running the main high-frequency clock (hfclk) from the output of the PLL.
     pllcfg.modify(.{ .pllsel = .pll });
