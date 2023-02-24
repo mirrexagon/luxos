@@ -17,7 +17,7 @@ const Register = @import("../../../mmio_register.zig").Register;
 
 const CRYSTAL_FREQUENCY_HZ = 16_000_000;
 
-pub fn getHfclkFrequencyHz() u32 {
+pub fn getHfclkHz() u32 {
     const pllcfg_value = pllcfg.read();
 
     const pllInputFrequency = switch (pllcfg_value.pllrefsel) {
@@ -44,12 +44,12 @@ fn getHfroscFrequency() u32 {
     return 14_400_000;
 }
 
-pub fn getCoreClkFrequencyHz() u32 {
-    return getHfclkFrequencyHz();
+pub fn getCoreClkHz() u32 {
+    return getHfclkHz();
 }
 
-pub fn getTlclkFrequencyHz() u32 {
-    return getCoreClkFrequencyHz();
+pub fn getTlclkHz() u32 {
+    return getCoreClkHz();
 }
 
 pub fn setupLfclk() void {}

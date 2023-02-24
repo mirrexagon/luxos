@@ -52,7 +52,7 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
     init_uart();
     init_heap();
 
-    std.log.debug("hfclk is {}", .{prci.getHfclkFrequencyHz()});
+    std.log.debug("hfclk is {}", .{prci.getHfclkHz()});
 
     kmain(main_allocator);
 }

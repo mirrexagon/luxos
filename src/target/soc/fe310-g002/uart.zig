@@ -13,7 +13,7 @@ fn Uart(comptime base_address: usize) type {
     return struct {
         pub fn setBaudRate(baud_rate: u32) void {
             div.modify(.{
-                .div = @truncate(u16, (prci.getTlclkFrequencyHz() / baud_rate) - 1),
+                .div = @truncate(u16, (prci.getTlclkHz() / baud_rate) - 1),
             });
         }
 
