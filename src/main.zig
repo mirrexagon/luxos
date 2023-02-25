@@ -12,9 +12,6 @@ pub fn kmain(heap_allocator: Allocator) noreturn {
     const trap_handler_ptr: *const fn () align(4) callconv(.Naked) void = trapHandler;
     riscv.mcsr.mtvec.write(.{ .mode = .direct, .base = @truncate(u30, @ptrToInt(trap_handler_ptr) >> 2) });
 
-    // TODO: Install machine mode trap handler to catch whatever is happening in
-    // the allocator when using thread safe allocator.
-
     var lua = Lua.init(heap_allocator) catch {
         std.log.err("Lua state creation failed", .{});
         @panic("Lua init failed");
