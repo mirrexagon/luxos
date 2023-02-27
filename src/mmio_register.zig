@@ -46,6 +46,8 @@ pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Wr
                 @compileError("can't modify because read and write types for this register aren't the same");
             }
 
+            // TODO: Disable interrupts? Atomic operations (for read() and write() etc.)?
+
             var value = self.read();
             const info = @typeInfo(@TypeOf(new_value));
 

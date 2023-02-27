@@ -29,6 +29,8 @@ pub fn kmain(heap_allocator: Allocator) noreturn {
     while (true) {}
 }
 
+// TODO: Proper register preservation, stack switching, etc.
+// https://osblog.stephenmarz.com/ch4.html
 fn trapHandler() align(4) callconv(.Naked) void {
     var mcause = riscv.mcsr.mcause.read();
     var mtval = riscv.mcsr.mtval.read();

@@ -18,6 +18,7 @@ const Register = @import("../../../mmio_register.zig").Register;
 // TODO: Make fe310 stuff a package and always get from there (root importing
 // file), instead of reimporting the file.
 const aon = @import("aon.zig");
+const clint = @import("clint.zig");
 
 const CRYSTAL_FREQUENCY_HZ = 16_000_000;
 
@@ -54,6 +55,10 @@ pub fn getCoreClkHz() u32 {
 
 pub fn getTlclkHz() u32 {
     return getCoreClkHz();
+}
+
+pub fn getLfclkHz() u32 {
+    return 32768;
 }
 
 pub fn setupClocks() void {
@@ -114,10 +119,13 @@ fn setupHfclk() void {
     });
 
     // Wait 100 us for PLL to regain lock before checking plllock.
-    // TODO: "I use 4 ticks of the 32 KHz low-frequency timer for this." - https://forums.sifive.com/t/something-i-learned-about-the-cpu-clock/2635
-    // Check CLINT (core local interruptor) block in section 9.1 - mtime register ticks with 32768 Hz LFCLK?
+    // 4 ticks of mtime which ticks at 32768 Hz is enough.
+    const now = clint.mtime.read();
+    while (clint.mtime.read() - now <= 4) {}
 
     while (!pllcfg.read().plllock) {}
+
+    // TODO: Slow flash accesses?
 
     // Switch to running the main high-frequency clock (hfclk) from the output of the PLL.
     pllcfg.modify(.{ .pllsel = .pll });
