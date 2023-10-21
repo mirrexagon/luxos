@@ -24,18 +24,25 @@ pub fn build(b: *Builder) void {
         .abi = Target.Abi.none,
     };
 
-    const kernel = b.addExecutable("kernel.elf", "src/start.zig");
+    const optimize = b.standardOptimizeOption(.{});
+
+    const kernel = b.addExecutable(.{
+        .name = "kernel.elf",
+        .root_source_file = .{ .path = "src/start.zig" },
+        .target = target,
+        .optimize = optimize,
+    });
+
     {
-        kernel.setBuildMode(b.standardReleaseOptions());
-        kernel.setTarget(target);
         kernel.setLinkerScriptPath(FileSource.relative("src/target/board/hifive1-revb/linker.ld"));
 
         // https://github.com/ziglang/zig/issues/5558
         kernel.code_model = .medium;
 
         add_lua(kernel);
-        add_libc(b, target, kernel);
-        kernel.install();
+        add_libc(b, target, optimize, kernel);
+
+        b.installArtifact(kernel);
     }
 
     b.default_step.dependOn(&kernel.step);
@@ -93,18 +100,21 @@ fn add_lua(item: *LibExeObjStep) void {
     };
 
     inline for (lua_c_files) |c_file| {
-        item.addCSourceFile(lua_src_dir ++ c_file, &cflags);
+        item.addCSourceFile(.{
+            .file = .{ .path = lua_src_dir ++ c_file },
+            .flags = &cflags,
+        });
     }
 
-    item.addIncludePath(lua_src_dir);
-    item.addIncludePath("src/libc/include");
+    item.addIncludePath(.{ .path = lua_src_dir });
+    item.addIncludePath(.{ .path = "src/libc/include" });
 
     item.defineCMacro("lua_getlocaledecpoint()", "('.')");
     item.defineCMacro("LUA_USE_APICHECK", "1");
     item.defineCMacro("LUAI_ASSERT", "1");
 }
 
-fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
+fn add_libc(b: *Builder, target: CrossTarget, optimize: std.builtin.Mode, item: *LibExeObjStep) void {
     const libc_src_dir = "src/libc/";
 
     const libc_files = .{
@@ -118,11 +128,15 @@ fn add_libc(b: *Builder, target: CrossTarget, item: *LibExeObjStep) void {
     };
 
     inline for (libc_files) |file| {
-        const obj = b.addObject(file.@"0", libc_src_dir ++ file.@"1");
-        obj.setTarget(target);
-        obj.addIncludePath("src/libc/include");
+        const obj = b.addObject(.{
+            .name = file.@"0",
+            .root_source_file = .{ .path = libc_src_dir ++ file.@"1" },
+            .target = target,
+            .optimize = optimize,
+        });
+        obj.addIncludePath(.{ .path = "src/libc/include" });
         item.addObject(obj);
     }
 
-    item.addCSourceFile(libc_src_dir ++ "snprintf.c", &cflags);
+    item.addCSourceFile(.{ .file = .{ .path = libc_src_dir ++ "snprintf.c" }, .flags = &cflags });
 }
