@@ -23,7 +23,7 @@ pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Wr
         const Self = @This();
 
         pub fn init(address: usize) Self {
-            return .{ .raw_ptr = @intToPtr(*volatile Inner, address) };
+            return .{ .raw_ptr = @as(*volatile Inner, @ptrFromInt(address)) };
         }
 
         pub fn read_raw(self: Self) Inner {
@@ -34,11 +34,11 @@ pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Wr
         }
 
         pub fn read(self: Self) Read {
-            return @bitCast(Read, self.raw_ptr.*);
+            return @as(Read, @bitCast(self.raw_ptr.*));
         }
 
         pub fn write(self: Self, value: Write) void {
-            self.raw_ptr.* = @bitCast(Inner, value);
+            self.raw_ptr.* = @as(Inner, @bitCast(value));
         }
 
         pub fn modify(self: Self, new_value: anytype) void {

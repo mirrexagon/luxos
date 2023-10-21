@@ -35,8 +35,8 @@ pub fn getHfclkHz() u32 {
         .pll => if (pllcfg_value.pllbypass) {
             return pllInputFrequency;
         } else {
-            const r: u32 = @intCast(u32, pllcfg_value.pllr) + 1;
-            const f: u32 = 2 * (@intCast(u32, pllcfg_value.pllf) + 1);
+            const r: u32 = @as(u32, @intCast(pllcfg_value.pllr)) + 1;
+            const f: u32 = 2 * (@as(u32, @intCast(pllcfg_value.pllf)) + 1);
             const q: u32 = math.powi(u32, 2, pllcfg_value.pllq) catch unreachable;
 
             return pllInputFrequency / r * f / q;

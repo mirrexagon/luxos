@@ -42,7 +42,7 @@ const passthru_high_ie = 0x44; // Pass-through active-high interrupt enable
 const passthru_low_ie = 0x48; // Pass-through active-low interrupt enable
 
 fn setGpioRegister(gpio_number: u5, register_offset: usize, new_value: u1) void {
-    const ptr = @intToPtr(*volatile u32, gpio_base_address + register_offset);
+    const ptr = @as(*volatile u32, @ptrFromInt(gpio_base_address + register_offset));
 
     var value = ptr.*;
     const mask = @as(u32, 1) << gpio_number;

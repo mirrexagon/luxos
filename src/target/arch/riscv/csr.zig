@@ -12,11 +12,11 @@ pub fn Csr(comptime csr: u12, comptime Inner: type) type {
         const Self = @This();
 
         pub fn read() Inner {
-            return @bitCast(Inner, Self.readRaw());
+            return @as(Inner, @bitCast(Self.readRaw()));
         }
 
         pub fn write(value: Inner) void {
-            Self.writeRaw(@bitCast(usize, value));
+            Self.writeRaw(@as(usize, @bitCast(value)));
         }
 
         pub fn modify(new_value: anytype) void {

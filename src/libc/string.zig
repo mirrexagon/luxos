@@ -9,8 +9,8 @@ const expectEqual = @import("testutil.zig").expectEqual;
 export fn strchr(str: [*:0]const u8, ch: c_int) ?*const u8 {
     const span = mem.span(str);
 
-    for (span) |src_ch, i| {
-        if (src_ch == @intCast(u8, ch)) {
+    for (span, 0..) |src_ch, i| {
+        if (src_ch == @as(u8, @intCast(ch))) {
             return &str[i];
         }
     }
@@ -33,7 +33,7 @@ test "strchr" {
 }
 
 export fn strpbrk(dest: [*:0]const u8, breakset: [*:0]const u8) ?*const u8 {
-    for (mem.span(dest)) |c, i| {
+    for (mem.span(dest), 0..) |c, i| {
         if (strchr(breakset, c) != null) {
             return &dest[i];
         }
@@ -95,7 +95,7 @@ test "strcmp" {
 export fn strcpy(dest: [*]u8, src: [*:0]const u8) [*]u8 {
     const src_span = mem.span(src);
 
-    for (src_span) |c, i| {
+    for (src_span, 0..) |c, i| {
         dest[i] = c;
     }
 
@@ -123,7 +123,7 @@ test "strcpy" {
 export fn strspn(dest: [*:0]const u8, src: [*:0]const u8) usize {
     const dest_span = mem.span(dest);
 
-    for (dest_span) |c, i| {
+    for (dest_span, 0..) |c, i| {
         if (strchr(src, c) == null) {
             return i;
         }

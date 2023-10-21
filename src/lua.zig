@@ -32,7 +32,7 @@ pub const Lua = struct {
         // alignment. We know that ud is a pointer to an Allocator (as passed in
         // new()) and so this is okay.
         const allocator_aligned = @alignCast(@alignOf(std.mem.Allocator), ud);
-        const allocator = @ptrCast(*std.mem.Allocator, allocator_aligned);
+        const allocator = @as(*std.mem.Allocator, @ptrCast(allocator_aligned));
 
         // malloc() in C guarantees valid alignment for any type, so we must match
         // that guarantee.
@@ -51,7 +51,7 @@ pub const Lua = struct {
         // We cast the pointer to a multiple-item pointer so that it can be sliced
         // to be passed to the allocator, since we are allocating slices of u8 in
         // the first place.
-        const ptr_multi = @ptrCast(?[*]align(alignment) u8, ptr_aligned);
+        const ptr_multi = @as(?[*]align(alignment) u8, @ptrCast(ptr_aligned));
 
         if (ptr_multi) |previous_ptr| {
             const previous_block = previous_ptr[0..osize];

@@ -33,18 +33,18 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
         \\mv sp, %[initial_stack_pointer_address]
         \\mv fp, sp
         :
-        : [initial_stack_pointer_address] "r" (@ptrToInt(&__stack_end)),
+        : [initial_stack_pointer_address] "r" (@intFromPtr(&__stack_end)),
         : "sp", "fp"
     );
 
     // Initialise data and BSS.
-    const data_length = @ptrToInt(&__data_source_end) - @ptrToInt(&__data_source_start);
-    const data_source = @ptrCast([*]volatile u8, &__data_source_start);
-    const data_dest = @ptrCast([*]volatile u8, &__data_dest_start);
-    for (data_source[0..data_length]) |b, i| data_dest[i] = b;
+    const data_length = @intFromPtr(&__data_source_end) - @intFromPtr(&__data_source_start);
+    const data_source = @as([*]volatile u8, @ptrCast(&__data_source_start));
+    const data_dest = @as([*]volatile u8, @ptrCast(&__data_dest_start));
+    for (data_source[0..data_length], 0..) |b, i| data_dest[i] = b;
 
-    const bss_length = @ptrToInt(&__bss_end) - @ptrToInt(&__bss_start);
-    const bss_dest = @ptrCast([*]volatile u8, &__bss_start);
+    const bss_length = @intFromPtr(&__bss_end) - @intFromPtr(&__bss_start);
+    const bss_dest = @as([*]volatile u8, @ptrCast(&__bss_start));
     for (bss_dest[0..bss_length]) |*b| b.* = 0;
 
     prci.setupClocks();
@@ -65,8 +65,8 @@ fn init_uart() void {
 }
 
 fn init_heap() void {
-    const heap_size = @ptrToInt(&__heap_end) - @ptrToInt(&__heap_start);
-    const heap_start_pointer = @ptrCast([*]u8, &__heap_start);
+    const heap_size = @intFromPtr(&__heap_end) - @intFromPtr(&__heap_start);
+    const heap_start_pointer = @as([*]u8, @ptrCast(&__heap_start));
     const heap_slice = heap_start_pointer[0..heap_size];
 
     // TODO: Use thread safe allocator?
