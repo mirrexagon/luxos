@@ -19,3 +19,7 @@ export fn ldexp(arg: f64, exp: c_int) f64 {
 export fn _fabs(arg: f64) f64 {
     return std.math.fabs(arg);
 }
+
+export fn fmod(x: f64, y: f64) f64 {
+    return @mod(x, y);
+}

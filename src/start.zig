@@ -28,15 +28,20 @@ var _main_allocator: heap.LoggingAllocator(.debug, .err) = undefined;
 var main_allocator: Allocator = undefined;
 
 export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn {
-    // Set up stack and frame pointers.
+
+    // Set up stack and frame pointers, then call `start()`.
     _ = asm volatile (
         \\mv sp, %[initial_stack_pointer_address]
         \\mv fp, sp
+        \\jal x0, start
         :
         : [initial_stack_pointer_address] "r" (@intFromPtr(&__stack_end)),
+          [start] "X" (&start),
         : "sp", "fp"
     );
+}
 
+fn start() noreturn {
     // Initialise data and BSS.
     const data_length = @intFromPtr(&__data_source_end) - @intFromPtr(&__data_source_start);
     const data_source = @as([*]volatile u8, @ptrCast(&__data_source_start));

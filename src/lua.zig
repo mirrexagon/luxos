@@ -31,8 +31,7 @@ pub const Lua = struct {
         // ?*anyopaque has an alignment of 1, but the Allocator struct has a larger
         // alignment. We know that ud is a pointer to an Allocator (as passed in
         // new()) and so this is okay.
-        const allocator_aligned = @alignCast(@alignOf(std.mem.Allocator), ud);
-        const allocator = @as(*std.mem.Allocator, @ptrCast(allocator_aligned));
+        const allocator: *std.mem.Allocator = @alignCast(ud);
 
         // malloc() in C guarantees valid alignment for any type, so we must match
         // that guarantee.
@@ -46,7 +45,7 @@ pub const Lua = struct {
 
         // The memory pointed to by ptr was allocated by this function and so has
         // the alignment we are using.
-        const ptr_aligned = @alignCast(alignment, ptr);
+        const ptr_aligned: *align(alignment) u8 = @alignCast(ptr);
 
         // We cast the pointer to a multiple-item pointer so that it can be sliced
         // to be passed to the allocator, since we are allocating slices of u8 in
