@@ -31,7 +31,7 @@ pub const Lua = struct {
         // ?*anyopaque has an alignment of 1, but the Allocator struct has a larger
         // alignment. We know that ud is a pointer to an Allocator (as passed in
         // new()) and so this is okay.
-        const allocator: *std.mem.Allocator = @alignCast(ud);
+        const allocator: *std.mem.Allocator = @ptrCast(@alignCast(ud));
 
         // malloc() in C guarantees valid alignment for any type, so we must match
         // that guarantee.
@@ -45,7 +45,7 @@ pub const Lua = struct {
 
         // The memory pointed to by ptr was allocated by this function and so has
         // the alignment we are using.
-        const ptr_aligned: *align(alignment) u8 = @alignCast(ptr);
+        const ptr_aligned: *align(alignment) u8 = @ptrCast(@alignCast(ptr));
 
         // We cast the pointer to a multiple-item pointer so that it can be sliced
         // to be passed to the allocator, since we are allocating slices of u8 in
@@ -53,22 +53,13 @@ pub const Lua = struct {
         const ptr_multi = @as(?[*]align(alignment) u8, @ptrCast(ptr_aligned));
 
         if (ptr_multi) |previous_ptr| {
+            // Resizing/allocating or freeing a block.
             const previous_block = previous_ptr[0..osize];
-
-            if (nsize <= osize) {
-                // Shrinking or freeing (if nsize == 0) a block.
-                // shrink() is used instead of realloc() because Lua assumes that
-                // shrinking never fails.
-                const new_block = allocator.shrink(previous_block, nsize);
-                return new_block.ptr;
-            } else {
-                // Expanding a block.
-                const new_block = allocator.realloc(previous_block, nsize) catch return null;
-                return new_block.ptr;
-            }
+            const new_block = allocator.realloc(previous_block, nsize) catch return null;
+            return new_block.ptr;
         } else {
             // Allocating a new block.
-            const allocated_block = allocator.allocAdvanced(u8, alignment, nsize, .exact) catch return null;
+            const allocated_block = allocator.allocWithOptions(u8, nsize, alignment, null) catch return null;
             return allocated_block.ptr;
         }
     }

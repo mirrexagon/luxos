@@ -22,26 +22,26 @@ pub fn AsymmetricRegister(comptime Inner: type, comptime Read: type, comptime Wr
 
         const Self = @This();
 
-        pub fn init(address: usize) Self {
+        pub inline fn init(address: usize) Self {
             return .{ .raw_ptr = @as(*volatile Inner, @ptrFromInt(address)) };
         }
 
-        pub fn read_raw(self: Self) Inner {
+        pub inline fn read_raw(self: Self) Inner {
             return self.raw_ptr.*;
         }
-        pub fn write_raw(self: Self, value: Inner) void {
+        pub inline fn write_raw(self: Self, value: Inner) void {
             self.raw_ptr.* = value;
         }
 
-        pub fn read(self: Self) Read {
+        pub inline fn read(self: Self) Read {
             return @as(Read, @bitCast(self.raw_ptr.*));
         }
 
-        pub fn write(self: Self, value: Write) void {
+        pub inline fn write(self: Self, value: Write) void {
             self.raw_ptr.* = @as(Inner, @bitCast(value));
         }
 
-        pub fn modify(self: Self, new_value: anytype) void {
+        pub inline fn modify(self: Self, new_value: anytype) void {
             if (Read != Write) {
                 @compileError("can't modify because read and write types for this register aren't the same");
             }

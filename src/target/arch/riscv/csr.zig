@@ -11,15 +11,15 @@ pub fn Csr(comptime csr: u12, comptime Inner: type) type {
     return struct {
         const Self = @This();
 
-        pub fn read() Inner {
+        pub inline fn read() Inner {
             return @as(Inner, @bitCast(Self.readRaw()));
         }
 
-        pub fn write(value: Inner) void {
+        pub inline fn write(value: Inner) void {
             Self.writeRaw(@as(usize, @bitCast(value)));
         }
 
-        pub fn modify(new_value: anytype) void {
+        pub inline fn modify(new_value: anytype) void {
             var value = Self.read();
             const info = @typeInfo(@TypeOf(new_value));
 
@@ -35,14 +35,14 @@ pub fn Csr(comptime csr: u12, comptime Inner: type) type {
             Self.write(value);
         }
 
-        pub fn readRaw() usize {
+        pub inline fn readRaw() usize {
             return asm volatile ("csrr %[ret], %[csr]"
                 : [ret] "=r" (-> usize),
                 : [csr] "i" (csr),
             );
         }
 
-        pub fn writeRaw(value: usize) void {
+        pub inline fn writeRaw(value: usize) void {
             asm volatile ("csrw %[csr], %[value]"
                 :
                 : [csr] "i" (csr),

@@ -41,7 +41,7 @@ export fn _start() align(4) linksection(".text.start") callconv(.Naked) noreturn
     );
 }
 
-fn start() noreturn {
+export fn start() noreturn {
     // Initialise data and BSS.
     const data_length = @intFromPtr(&__data_source_end) - @intFromPtr(&__data_source_start);
     const data_source = @as([*]volatile u8, @ptrCast(&__data_source_start));
@@ -83,15 +83,15 @@ fn init_heap() void {
     std.log.debug("Heap initialized", .{});
 }
 
-pub fn log(
-    comptime level: std.log.Level,
-    comptime scope: @TypeOf(.EnumLiteral),
+pub fn serialLog(
+    comptime message_level: std.log.Level,
+    comptime scope: @Type(.EnumLiteral),
     comptime format: []const u8,
     args: anytype,
 ) void {
     var buffer = [_]u8{0} ** 256;
 
-    const level_txt = comptime level.asText();
+    const level_txt = comptime message_level.asText();
     const prefix2 = if (scope == .default) " " else "(" ++ @tagName(scope) ++ ") ";
 
     const string = fmt.bufPrint(&buffer, "[" ++ level_txt ++ "]" ++ prefix2 ++ format ++ "\r\n", args) catch return uart.Uart0.writeString("Log line did not fit in buffer!\r\n");
@@ -109,3 +109,8 @@ pub fn panic(message: []const u8, stack_trace: ?*std.builtin.StackTrace, ret_add
 
     while (true) {}
 }
+
+pub const std_options = struct {
+    pub const log_level = .debug;
+    pub const logFn = serialLog;
+};
